@@ -12,12 +12,14 @@ import {
   GetUsersInputQueriesModelType,
 } from './users.types';
 import { query } from 'express';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
+  constructor(protected usersService: UsersService) {}
   @Get()
   getUsers(@Query() query: GetUsersInputQueriesModelType) {
-    return 'get users';
+    return this.usersService.findUsers();
   }
   @Post()
   addUser(@Body() inputModel: CreateUserInputModelType) {
