@@ -4,7 +4,7 @@ import { UsersRepository } from './users.repository';
 @Injectable()
 export class UsersService {
   constructor(protected usersRepository: UsersRepository) {}
-  findUsers() {
-    return this.usersRepository.findUsers();
+  async findUsers() {
+    return await this.usersRepository.findUsers();
   }
 }
