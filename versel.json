@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "nest_homeworks_blogs",
+  "name": "nest-homeworks-blogs",
   "builds": [
     { "src": "src/main.ts", "use": "@vercel/node" }
   ],
