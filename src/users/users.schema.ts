@@ -53,8 +53,10 @@ export class User {
     return '';
   }
 }
+
 export type UserDocument = HydratedDocument<User>;
 export const UserSchema = SchemaFactory.createForClass(User);
+
 UserSchema.methods = {
   confirmEmailByCode: User.prototype.confirmEmailByCode,
 };

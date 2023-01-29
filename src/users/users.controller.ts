@@ -22,7 +22,7 @@ export class UsersController {
   }
   @Post()
   addUser(@Body() inputModel: CreateUserInputModelType) {
-    return 'add user';
+    return { text: 'add user' };
   }
   @Delete(':id')
   deleteUserById(@Param('id') userId: string) {
