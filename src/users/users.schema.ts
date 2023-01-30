@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument, Types } from 'mongoose';
+import { CreateUserInputModelType } from './users.types';
 
 @Schema()
 export class UserEmailConfirmation {
@@ -49,6 +50,12 @@ export class User {
     this.emailConfirmation.isConfirmed = true;
     return true;
   }
+  async fillEntity(data: CreateUserInputModelType): Promise<void> {
+    this._id = new Types.ObjectId();
+    this.accountData.login = data.login;
+    this.accountData.email = data.email;
+    this.accountData.createdAt = new Date().toISOString();
+  }
   static async generateSalt(): Promise<string> {
     return '';
   }
@@ -59,6 +66,7 @@ export const UserSchema = SchemaFactory.createForClass(User);
 
 UserSchema.methods = {
   confirmEmailByCode: User.prototype.confirmEmailByCode,
+  fillEntity: User.prototype.fillEntity,
 };
 UserSchema.statics = {
   generateSalt: User.generateSalt,

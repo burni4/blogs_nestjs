@@ -22,7 +22,7 @@ export class UsersService {
   }
   async addUsers(newUser: CreateUserInputModelType) {
     const user: UserDocument = new this.UserModel();
-
+    await user.fillEntity(newUser);
     await this.usersRepository.save(user);
   }
   async deleteUserByID(userId: string): Promise<boolean> {
