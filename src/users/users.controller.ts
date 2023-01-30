@@ -18,14 +18,16 @@ export class UsersController {
   constructor(protected usersService: UsersService) {}
   @Get()
   async getUsers(@Query() query: GetUsersInputQueriesModelType) {
-    return await this.usersService.findUsers();
+    const result = await this.usersService.findUsers(query);
+    return result;
   }
   @Post()
   addUser(@Body() inputModel: CreateUserInputModelType) {
     return { text: 'add user' };
   }
   @Delete(':id')
-  deleteUserById(@Param('id') userId: string) {
-    return 'delete user';
+  async deleteUserById(@Param('id') userId: string) {
+    const result = await this.usersService.deleteUserByID(userId);
+    return result;
   }
 }
