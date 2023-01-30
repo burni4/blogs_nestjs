@@ -22,8 +22,9 @@ export class UsersController {
     return result;
   }
   @Post()
-  addUser(@Body() inputModel: CreateUserInputModelType) {
-    return { text: 'add user' };
+  async addUser(@Body() inputModel: CreateUserInputModelType) {
+    const result = await this.usersService.addUsers(inputModel);
+    return result;
   }
   @Delete(':id')
   async deleteUserById(@Param('id') userId: string) {

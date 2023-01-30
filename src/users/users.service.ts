@@ -12,7 +12,7 @@ import { InjectModel } from '@nestjs/mongoose';
 export class UsersService {
   constructor(
     protected usersRepository: UsersRepository,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(User.name) private UserModel: Model<UserDocument>,
   ) {}
   async deleteAllUsers(): Promise<boolean> {
     return await this.usersRepository.deleteAllUsers();
@@ -21,7 +21,8 @@ export class UsersService {
     return await this.usersRepository.findUsers(paginationParams);
   }
   async addUsers(newUser: CreateUserInputModelType) {
-    const user: UserDocument = new this.userModel();
+    const user: UserDocument = new this.UserModel();
+
     await this.usersRepository.save(user);
   }
   async deleteUserByID(userId: string): Promise<boolean> {
