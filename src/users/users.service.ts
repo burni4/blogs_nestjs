@@ -1,29 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import {
-  CreateUserInputModelType,
-  GetUsersInputQueriesModelType,
-} from './users.types';
-import { User, UserDocument } from './users.schema';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
+import { User, UserDocument } from './schemas/users.schema';
+import { CreateUserInputModelDto } from './dto/create-user.dto';
+import { PaginationConverter } from '../helpers/pagination';
+import { OutputUserDto } from './dto/output-user.dto';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    protected usersRepository: UsersRepository,
-    @InjectModel(User.name) private UserModel: Model<UserDocument>,
-  ) {}
+  constructor(protected usersRepository: UsersRepository) {}
   async deleteAllUsers(): Promise<boolean> {
     return await this.usersRepository.deleteAllUsers();
   }
-  async findUsers(paginationParams: GetUsersInputQueriesModelType) {
+  async findUsers(paginationParams: PaginationConverter) {
     return await this.usersRepository.findUsers(paginationParams);
   }
-  async addUsers(newUser: CreateUserInputModelType) {
-    const user: UserDocument = new this.UserModel();
-    await user.fillEntity(newUser);
-    await this.usersRepository.save(user);
+  async addUsers(
+    createUserDto: CreateUserInputModelDto,
+  ): Promise<OutputUserDto | null> {
+    const user: User = new User(createUserDto);
+    const result = await this.usersRepository.save(user);
+    if (!result) return null;
+    const outputUserDto = new OutputUserDto(user);
+    return outputUserDto;
   }
   async deleteUserByID(userId: string): Promise<boolean> {
     const foundUser: UserDocument = await this.usersRepository.findUserByID(
