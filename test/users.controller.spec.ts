@@ -39,7 +39,7 @@ describe('AppController', () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
 
-    it('should create new user', async () => {
+    it('Should create new user. And return status 201', async () => {
       const outputUserDto: OutputUserDto = {
         id: expect.any(String),
         login: inputUserDto.login,
@@ -61,19 +61,22 @@ describe('AppController', () => {
     afterAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
-
-    it('should delete new user', async () => {
+    let userId = '';
+    it('Should create new user. Return response status 201', async () => {
       const newUser = await request(server)
         .post('/users')
         .send(inputUserDto)
         .expect(201);
-
+      userId = newUser.body.id;
+    });
+    it('Should try delete non existing user. Return response status 404', async () => {
       await request(server)
         .delete('/users/' + 'UserID')
         .expect(404);
-
+    });
+    it('Should delete new user. Return response status 204', async () => {
       await request(server)
-        .delete('/users/' + newUser.body.id)
+        .delete('/users/' + userId)
         .expect(204);
     });
   });
