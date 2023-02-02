@@ -31,7 +31,7 @@ describe('AppController', () => {
     app.close();
   });
 
-  describe('add new user', () => {
+  describe('Users [POST]', () => {
     beforeAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
@@ -54,7 +54,7 @@ describe('AppController', () => {
     });
   });
 
-  describe('Delete user', () => {
+  describe('Users [DELETE]', () => {
     beforeAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
@@ -78,7 +78,7 @@ describe('AppController', () => {
     });
   });
 
-  describe('Should get all users', () => {
+  describe('Users [GET]', () => {
     beforeAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
