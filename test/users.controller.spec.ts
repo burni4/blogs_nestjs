@@ -6,6 +6,13 @@ import { CreateUserInputModelDto } from '../src/users/dto/create-user.dto';
 import { OutputUserDto } from '../src/users/dto/output-user.dto';
 
 jest.setTimeout(600000);
+
+const inputUserDto: CreateUserInputModelDto = {
+  login: 'UserTest1',
+  password: 'UserPassword1',
+  email: 'usermail1@gmail.com',
+};
+
 describe('AppController', () => {
   let app: INestApplication;
   let server: any;
@@ -24,7 +31,7 @@ describe('AppController', () => {
     app.close();
   });
 
-  describe('add user', () => {
+  describe('add new user', () => {
     beforeAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
@@ -33,11 +40,6 @@ describe('AppController', () => {
     });
 
     it('should create new user', async () => {
-      const inputUserDto: CreateUserInputModelDto = {
-        login: 'UserTest1',
-        password: 'UserPassword1',
-        email: 'usermail1@gmail.com',
-      };
       const outputUserDto: OutputUserDto = {
         id: expect.any(String),
         login: inputUserDto.login,
@@ -49,6 +51,42 @@ describe('AppController', () => {
         .send(inputUserDto)
         .expect(201);
       expect(createUserResponse.body).toStrictEqual(outputUserDto);
+    });
+  });
+
+  describe('Delete user', () => {
+    beforeAll(async () => {
+      await request(server).delete('/testing/all-data').expect(204);
+    });
+    afterAll(async () => {
+      await request(server).delete('/testing/all-data').expect(204);
+    });
+
+    it('should delete new user', async () => {
+      const newUser = await request(server)
+        .post('/users')
+        .send(inputUserDto)
+        .expect(201);
+
+      await request(server)
+        .delete('/users/' + 'UserID')
+        .expect(404);
+
+      await request(server)
+        .delete('/users/' + newUser.body.id)
+        .expect(204);
+    });
+  });
+
+  describe('Should get all users', () => {
+    beforeAll(async () => {
+      await request(server).delete('/testing/all-data').expect(204);
+    });
+    afterAll(async () => {
+      await request(server).delete('/testing/all-data').expect(204);
+    });
+    it('should return status 200 when GET all users', async () => {
+      await request(server).get('/users').send().expect(200);
     });
   });
 });

@@ -16,9 +16,14 @@ export class UsersRepository {
       return null;
     }
   }
-  async delete(user: UserDocument): Promise<boolean> {
-    await user.deleteOne();
-    return true;
+  async delete(user: User): Promise<boolean> {
+    try {
+      const newUser = new this.UserModel({ ...user });
+      await newUser.deleteOne();
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
   async deleteAllUsers(): Promise<boolean> {
     await this.UserModel.deleteMany({});
@@ -29,7 +34,12 @@ export class UsersRepository {
   ): Promise<UserDocument[]> {
     return await this.UserModel.find({}).exec();
   }
-  async findUserByID(userId: string): Promise<UserDocument> {
-    return await this.UserModel.findOne({ id: userId }).exec();
+  async findUserByID(userId: string): Promise<User | null> {
+    const userFromDB: UserDocument = await this.UserModel.findOne({
+      id: userId,
+    }).exec();
+    if (!userFromDB) return null;
+    const user: User = await User.userDocumentToUserClass(userFromDB);
+    return user;
   }
 }
