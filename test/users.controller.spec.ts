@@ -111,11 +111,11 @@ describe('AppController', () => {
         .send()
         .query({ pageNumber: 1, pageSize: 2 })
         .expect(200);
-      expect(emptyUsers.body.page).toBe('1');
-      expect(emptyUsers.body.pageSize).toBe('2');
+      expect(emptyUsers.body.page).toBe(1);
+      expect(emptyUsers.body.pageSize).toBe(2);
       expect(emptyUsers.body.pagesCount).toBe(10);
       expect(emptyUsers.body.totalCount).toBe(20);
-      expect(emptyUsers.body.items.length).toEqual(1);
+      expect(emptyUsers.body.items.length).toEqual(2);
     });
   });
 });

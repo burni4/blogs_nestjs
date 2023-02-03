@@ -35,8 +35,8 @@ describe('AppController', () => {
         .get('/users')
         .send()
         .expect(200);
-      expect(responseEmptyUsers.body.length).toEqual(0);
-      expect(responseEmptyUsers.body).toStrictEqual([]);
+      expect(responseEmptyUsers.body.items.length).toEqual(0);
+      expect(responseEmptyUsers.body.items).toStrictEqual([]);
 
       const inputUserDto: CreateUserInputModelDto = {
         login: 'UserTest1',
@@ -52,15 +52,15 @@ describe('AppController', () => {
         .get('/users')
         .send()
         .expect(200);
-      expect(responseAllUsers.body.length).toEqual(1);
+      expect(responseAllUsers.body.items.length).toEqual(1);
 
       await request(server).delete('/testing/all-data').send().expect(204);
       const responseEmptyUsersAfterRemoving = await request(server)
         .get('/users')
         .send()
         .expect(200);
-      expect(responseEmptyUsersAfterRemoving.body.length).toEqual(0);
-      expect(responseEmptyUsersAfterRemoving.body).toStrictEqual([]);
+      expect(responseEmptyUsersAfterRemoving.body.items.length).toEqual(0);
+      expect(responseEmptyUsersAfterRemoving.body.items).toStrictEqual([]);
     });
   });
 });

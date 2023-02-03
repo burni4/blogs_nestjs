@@ -18,12 +18,12 @@ export class PaginationConverter {
       this.sortDirection = 'desc';
     }
     if (typeof obj['pageNumber'] !== 'undefined') {
-      this.pageNumber = obj.pageNumber;
+      this.pageNumber = +obj.pageNumber;
     } else {
       this.pageNumber = 1;
     }
     if (typeof obj['pageSize'] !== 'undefined') {
-      this.pageSize = obj.pageSize;
+      this.pageSize = +obj.pageSize;
     } else {
       this.pageSize = 10;
     }
