@@ -12,3 +12,18 @@ export class OutputUserDto {
     this.createdAt = user.accountData.createdAt;
   }
 }
+
+export class OutputUsersWithPaginationDto {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: OutputUserDto[];
+  constructor(pagesCount, page, pageSize, totalCount, items) {
+    this.pagesCount = pagesCount;
+    this.page = page;
+    this.pageSize = pageSize;
+    this.totalCount = totalCount;
+    this.items = items;
+  }
+}

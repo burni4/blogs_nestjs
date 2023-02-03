@@ -13,14 +13,18 @@ import {
 import { UsersService } from './users.service';
 import { PaginationConverter } from '../helpers/pagination';
 import { CreateUserInputModelDto } from './dto/create-user.dto';
-import { OutputUserDto } from './dto/output-user.dto';
+import {
+  OutputUserDto,
+  OutputUsersWithPaginationDto,
+} from './dto/output-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(protected usersService: UsersService) {}
   @Get()
   async getUsers(@Query() query: PaginationConverter) {
-    const result = await this.usersService.findUsers(query);
+    const result: OutputUsersWithPaginationDto =
+      await this.usersService.findUsers(query);
     return result;
   }
   @Post()

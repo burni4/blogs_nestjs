@@ -3,7 +3,10 @@ import { UsersRepository } from './users.repository';
 import { User } from './schemas/users.schema';
 import { CreateUserInputModelDto } from './dto/create-user.dto';
 import { PaginationConverter } from '../helpers/pagination';
-import { OutputUserDto } from './dto/output-user.dto';
+import {
+  OutputUserDto,
+  OutputUsersWithPaginationDto,
+} from './dto/output-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,8 +14,13 @@ export class UsersService {
   async deleteAllUsers(): Promise<boolean> {
     return await this.usersRepository.deleteAllUsers();
   }
-  async findUsers(paginationParams: PaginationConverter) {
-    return await this.usersRepository.findUsers(paginationParams);
+  async findUsers(
+    paginationParams: PaginationConverter,
+  ): Promise<OutputUsersWithPaginationDto> {
+    const paginator: PaginationConverter = new PaginationConverter(
+      paginationParams,
+    );
+    return await this.usersRepository.findUsers(paginator);
   }
   async addUsers(
     createUserDto: CreateUserInputModelDto,

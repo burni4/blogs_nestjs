@@ -3,7 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { CreateUserInputModelDto } from '../src/users/dto/create-user.dto';
-import { OutputUserDto } from '../src/users/dto/output-user.dto';
+import {
+  OutputUserDto,
+  OutputUsersWithPaginationDto,
+} from '../src/users/dto/output-user.dto';
 
 jest.setTimeout(600000);
 
@@ -90,6 +93,29 @@ describe('AppController', () => {
     });
     it('should return status 200 when GET all users', async () => {
       await request(server).get('/users').send().expect(200);
+    });
+    it('should return empty array with default pagination. Status 200', async () => {
+      const emptyUsers = await request(server).get('/users').send().expect(200);
+      const defaultOutputDTO: OutputUsersWithPaginationDto =
+        new OutputUsersWithPaginationDto(0, 1, 10, 0, []);
+      expect(emptyUsers.body).toEqual(defaultOutputDTO);
+    });
+    it('Create 20 new users. All response statuses should be 201.', async () => {
+      for (let step = 0; step < 20; step++) {
+        await request(server).post('/users').send(inputUserDto).expect(201);
+      }
+    });
+    it('Should return 2 users on page. Status 200', async () => {
+      const emptyUsers = await request(server)
+        .get('/users')
+        .send()
+        .query({ pageNumber: 1, pageSize: 2 })
+        .expect(200);
+      expect(emptyUsers.body.page).toBe('1');
+      expect(emptyUsers.body.pageSize).toBe('2');
+      expect(emptyUsers.body.pagesCount).toBe(10);
+      expect(emptyUsers.body.totalCount).toBe(20);
+      expect(emptyUsers.body.items.length).toEqual(1);
     });
   });
 });

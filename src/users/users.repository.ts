@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/users.schema';
 import { Model } from 'mongoose';
 import { PaginationConverter } from '../helpers/pagination';
+import { OutputUsersWithPaginationDto } from './dto/output-user.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -30,16 +31,56 @@ export class UsersRepository {
     return true;
   }
   async findUsers(
-    paginationParams: PaginationConverter,
-  ): Promise<UserDocument[]> {
-    return await this.UserModel.find({}).exec();
+    paginator: PaginationConverter,
+  ): Promise<OutputUsersWithPaginationDto> {
+    let filter = {};
+    const expressions = [];
+    if (paginator.searchLoginTerm) {
+      expressions.push({
+        'accountData.login': {
+          $regex: paginator.searchLoginTerm,
+          $options: 'i',
+        },
+      });
+    }
+    if (paginator.searchEmailTerm) {
+      expressions.push({
+        'accountData.email': {
+          $regex: paginator.searchEmailTerm,
+          $options: 'i',
+        },
+      });
+    }
+
+    if (expressions.length > 0) {
+      filter = { $or: expressions };
+    }
+
+    const foundUsersInDB = await this.UserModel.find(filter, {
+      projection: { _id: 0 },
+    })
+      .sort({ [paginator.sortBy]: paginator.sortDirection === 'asc' ? 1 : -1 })
+      .skip((paginator.pageNumber - 1) * paginator.pageSize)
+      .limit(paginator.pageSize)
+      .exec();
+
+    const totalCount = await this.UserModel.count(filter);
+    const pageCount: number = Math.ceil(totalCount / paginator.pageSize);
+
+    return User.mapUserDocumentsToOutputUsersWithPaginationDto(
+      pageCount,
+      paginator.pageNumber,
+      paginator.pageSize,
+      totalCount,
+      foundUsersInDB,
+    );
   }
   async findUserByID(userId: string): Promise<User | null> {
     const userFromDB: UserDocument = await this.UserModel.findOne({
       id: userId,
     }).exec();
     if (!userFromDB) return null;
-    const user: User = await User.userDocumentToUserClass(userFromDB);
+    const user: User = User.userDocumentToUserClass(userFromDB);
     return user;
   }
 }
