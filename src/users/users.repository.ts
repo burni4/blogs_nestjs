@@ -19,8 +19,9 @@ export class UsersRepository {
   }
   async delete(user: User): Promise<boolean> {
     try {
-      const newUser = new this.UserModel({ ...user });
-      await newUser.deleteOne();
+      const result = await this.UserModel.deleteOne({
+        id: user.id,
+      });
       return true;
     } catch (error) {
       return false;

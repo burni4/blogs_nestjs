@@ -42,7 +42,7 @@ describe('AppController', () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
 
-    it('Should create new user. And return status 201', async () => {
+    it('Should create new user. And return status 201 [POST]', async () => {
       const outputUserDto: OutputUserDto = {
         id: expect.any(String),
         login: inputUserDto.login,
@@ -65,22 +65,37 @@ describe('AppController', () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
     let userId = '';
-    it('Should create new user. Return response status 201', async () => {
+    it('Should create new user. Return response status 201 [POST]', async () => {
       const newUser = await request(server)
         .post('/users')
         .send(inputUserDto)
         .expect(201);
       userId = newUser.body.id;
     });
-    it('Should try delete non existing user. Return response status 404', async () => {
+
+    it('Should try delete non existing user. Return response status 404 [DELETE]', async () => {
       await request(server)
         .delete('/users/' + 'UserID')
         .expect(404);
     });
-    it('Should delete new user. Return response status 204', async () => {
+    it('Should delete new user. Return response status 204 [DELETE]', async () => {
       await request(server)
         .delete('/users/' + userId)
         .expect(204);
+    });
+
+    it('should return a 404 status after receiving a deleted user [GET]', async () => {
+      await request(server)
+        .get('/users/' + userId)
+        .expect(404);
+    });
+    it('Should return 0 users on page. Status 200 [GET]', async () => {
+      const users = await request(server)
+        .get('/users')
+        .send()
+        .query({ pageNumber: 1, pageSize: 1 })
+        .expect(200);
+      expect(users.body.items.length).toBe(0);
     });
   });
 
@@ -94,18 +109,18 @@ describe('AppController', () => {
     it('should return status 200 when GET all users', async () => {
       await request(server).get('/users').send().expect(200);
     });
-    it('should return empty array with default users pagination. Status 200', async () => {
+    it('should return empty array with default users pagination. Status 200 [GET]', async () => {
       const emptyUsers = await request(server).get('/users').send().expect(200);
       const defaultOutputDTO: OutputUsersWithPaginationDto =
         new OutputUsersWithPaginationDto(0, 1, 10, 0, []);
       expect(emptyUsers.body).toEqual(defaultOutputDTO);
     });
-    it('Create 20 new users. All response statuses should be 201.', async () => {
+    it('Create 20 new users. All response statuses should be 201 [POST]', async () => {
       for (let step = 0; step < 20; step++) {
         await request(server).post('/users').send(inputUserDto).expect(201);
       }
     });
-    it('Should return 2 users on page. Status 200', async () => {
+    it('Should return 2 users on page. Status 200 [GET]', async () => {
       const users = await request(server)
         .get('/users')
         .send()

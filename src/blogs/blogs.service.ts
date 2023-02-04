@@ -38,4 +38,13 @@ export class BlogsService {
       await this.blogsRepository.getBlogs(paginator);
     return result;
   }
+  async deleteBlogByID(blogId: string): Promise<boolean> {
+    const foundBlog: Blog | null = await this.blogsRepository.getBlogByID(
+      blogId,
+    );
+    if (!foundBlog) return false;
+
+    const result: boolean = await this.blogsRepository.delete(foundBlog);
+    return result;
+  }
 }

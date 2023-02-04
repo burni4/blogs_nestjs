@@ -42,7 +42,7 @@ describe('AppController', () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
 
-    it('Should create new blog. And return status 201', async () => {
+    it('Should create new blog. And return status 201 [POST]', async () => {
       const outputBlogDto: OutputBlogDto = {
         id: expect.any(String),
         description: inputBlogDto.description,
@@ -66,21 +66,21 @@ describe('AppController', () => {
     afterAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
-    it('should return status 404 when GET non existent blog', async () => {
+    it('should return status 404 when GET non existent blog [GET]', async () => {
       await request(server)
         .get('/blogs/' + 'nonExistentId')
         .send()
         .expect(404);
     });
     let newBlogID = '';
-    it('should create new blog and return status 201', async () => {
-      const createPostResponse = await request(server)
+    it('should create new blog and return status 201 [POST]', async () => {
+      const createBlogResponse = await request(server)
         .post('/blogs')
         .send(inputBlogDto)
         .expect(201);
-      newBlogID = createPostResponse.body.id;
+      newBlogID = createBlogResponse.body.id;
     });
-    it('should return new blog with response status 200', async () => {
+    it('should return new blog with response status 200 [GET]', async () => {
       const foundBlog = await request(server)
         .get('/blogs/' + newBlogID)
         .send()
@@ -104,21 +104,21 @@ describe('AppController', () => {
     afterAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
-    it('should return status 200 when GET all blogs', async () => {
+    it('should return status 200 when GET all blogs [GET]', async () => {
       await request(server).get('/blogs').send().expect(200);
     });
-    it('should return empty array with default blogs pagination. Status 200', async () => {
+    it('should return empty array with default blogs pagination. Status 200 [GET]', async () => {
       const emptyBlogs = await request(server).get('/blogs').send().expect(200);
       const defaultOutputDTO: OutputBlogsWithPaginationDto =
         new OutputBlogsWithPaginationDto(0, 1, 10, 0, []);
       expect(emptyBlogs.body).toEqual(defaultOutputDTO);
     });
-    it('Create 20 new blogs. All response statuses should be 201.', async () => {
+    it('Create 20 new blogs. All response statuses should be 201 [POST]', async () => {
       for (let step = 0; step < 20; step++) {
         await request(server).post('/blogs').send(inputBlogDto).expect(201);
       }
     });
-    it('Should return 2 blogs on page. Status 200', async () => {
+    it('Should return 2 blogs on page. Status 200 [GET]', async () => {
       const blogs = await request(server)
         .get('/blogs')
         .send()
@@ -130,10 +130,48 @@ describe('AppController', () => {
       expect(blogs.body.totalCount).toBe(20);
       expect(blogs.body.items.length).toEqual(2);
     });
-
-    // describe('Blogs [PUT]', () => {});
-    //
-    // describe('Blogs [DELETE]', () => {});
-    //
+  });
+  describe('Blogs [PUT]', () => {
+    beforeAll(async () => {
+      await request(server).delete('/testing/all-data').expect(204);
+    });
+    afterAll(async () => {
+      await request(server).delete('/testing/all-data').expect(204);
+    });
+    it('Update blog and return status 204', async () => {});
+  });
+  //
+  describe('Blogs [DELETE]', () => {
+    beforeAll(async () => {
+      await request(server).delete('/testing/all-data').expect(204);
+    });
+    afterAll(async () => {
+      await request(server).delete('/testing/all-data').expect(204);
+    });
+    it('Should try delete non existing blog. Return response status 404 [DELETE]', async () => {
+      await request(server)
+        .delete('/blogs/' + 'nonExistentId')
+        .expect(404);
+    });
+    let newBlogID = '';
+    it('should create new blog and return status 201 [POST]', async () => {
+      const createBlogResponse = await request(server)
+        .post('/blogs')
+        .send(inputBlogDto)
+        .expect(201);
+      newBlogID = createBlogResponse.body.id;
+    });
+    console.log(newBlogID);
+    it('Should delete new blog. Return response status 204 [DELETE]', async () => {
+      await request(server)
+        .delete('/blogs/' + newBlogID)
+        .expect(204);
+    });
+    it('should return a 404 status after receiving a deleted blog [GET]', async () => {
+      const res = await request(server)
+        .get('/blogs/' + newBlogID)
+        .send()
+        .expect(404);
+    });
   });
 });

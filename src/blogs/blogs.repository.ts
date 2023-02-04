@@ -22,6 +22,16 @@ export class BlogsRepository {
       return null;
     }
   }
+  async delete(blog: Blog): Promise<boolean> {
+    try {
+      const result = await this.BlogModel.deleteOne({
+        id: blog.id,
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
   async getBlogByID(blogId: string): Promise<Blog | null> {
     const blogFromDB: BlogDocument = await this.BlogModel.findOne({
       id: blogId,

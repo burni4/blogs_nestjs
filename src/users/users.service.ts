@@ -38,8 +38,8 @@ export class UsersService {
     );
     if (!foundUser) return false;
 
-    const res = await this.usersRepository.delete(foundUser);
+    const result: boolean = await this.usersRepository.delete(foundUser);
 
-    return true;
+    return result;
   }
 }
