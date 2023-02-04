@@ -60,15 +60,14 @@ export class UsersRepository {
       projection: { _id: 0 },
     })
       .sort({ [paginator.sortBy]: paginator.sortDirection === 'asc' ? 1 : -1 })
-      .skip((paginator.pageNumber - 1) * paginator.pageSize)
+      .skip(paginator.getSkipCount())
       .limit(paginator.pageSize)
       .exec();
 
     const totalCount = await this.UserModel.count(filter);
-    const pageCount: number = Math.ceil(totalCount / paginator.pageSize);
 
     return User.mapUserDocumentsToOutputUsersWithPaginationDto(
-      pageCount,
+      paginator.getPageCount(totalCount),
       paginator.pageNumber,
       paginator.pageSize,
       totalCount,

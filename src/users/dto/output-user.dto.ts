@@ -19,7 +19,13 @@ export class OutputUsersWithPaginationDto {
   pageSize: number;
   totalCount: number;
   items: OutputUserDto[];
-  constructor(pagesCount, page, pageSize, totalCount, items) {
+  constructor(
+    pagesCount: number,
+    page: number,
+    pageSize: number,
+    totalCount: number,
+    items: OutputUserDto[],
+  ) {
     this.pagesCount = pagesCount;
     this.page = page;
     this.pageSize = pageSize;

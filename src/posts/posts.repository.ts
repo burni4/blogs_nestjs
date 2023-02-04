@@ -10,6 +10,10 @@ export class PostsRepository {
     private PostsModel: Model<PostDocument>,
   ) {}
 
+  async deleteAllPosts(): Promise<boolean> {
+    await this.PostsModel.deleteMany({});
+    return true;
+  }
   async save(post: Post): Promise<Post | null> {
     try {
       const newPost = new this.PostsModel({ ...post });

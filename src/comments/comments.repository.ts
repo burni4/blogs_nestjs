@@ -10,6 +10,10 @@ export class CommentsRepository {
     private CommentModel: Model<CommentDocument>,
   ) {}
 
+  async deleteAllComments(): Promise<boolean> {
+    await this.CommentModel.deleteMany({});
+    return true;
+  }
   async save(comment: CommentManager): Promise<CommentManager | null> {
     try {
       const newComment = new this.CommentModel({ ...comment });

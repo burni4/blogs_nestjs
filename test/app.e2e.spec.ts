@@ -21,7 +21,4 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect('NestJS. Homework [Blogs] from Artem Narchuk');
   });
-  it('/ (GET)', () => {
-    return request(app.getHttpServer()).get('/users').expect(200).expect([]);
-  });
 });

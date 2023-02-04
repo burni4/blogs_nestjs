@@ -3,6 +3,7 @@ export class PaginationConverter {
   sortDirection: string;
   pageNumber: number;
   pageSize: number;
+  searchNameTerm: string | null;
   searchLoginTerm: string | null;
   searchEmailTerm: string | null;
 
@@ -37,5 +38,16 @@ export class PaginationConverter {
     } else {
       this.searchEmailTerm = null;
     }
+    if (typeof obj['searchNameTerm'] !== 'undefined') {
+      this.searchNameTerm = obj.searchNameTerm;
+    } else {
+      this.searchNameTerm = null;
+    }
+  }
+  getSkipCount() {
+    return (this.pageNumber - 1) * this.pageSize;
+  }
+  getPageCount(totalCount: number) {
+    return Math.ceil(totalCount / this.pageSize);
   }
 }

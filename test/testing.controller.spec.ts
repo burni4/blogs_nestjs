@@ -55,6 +55,7 @@ describe('AppController', () => {
       expect(responseAllUsers.body.items.length).toEqual(1);
 
       await request(server).delete('/testing/all-data').send().expect(204);
+
       const responseEmptyUsersAfterRemoving = await request(server)
         .get('/users')
         .send()

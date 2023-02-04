@@ -2,7 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { randomUUID } from 'crypto';
 import { CreateUserInputModelDto } from '../dto/create-user.dto';
-import { OutputUsersWithPaginationDto } from '../dto/output-user.dto';
+import {
+  OutputUserDto,
+  OutputUsersWithPaginationDto,
+} from '../dto/output-user.dto';
 
 @Schema({ id: false, _id: false })
 export class UserEmailConfirmation {
@@ -83,13 +86,15 @@ export class User {
     totalCount,
     userDocuments: UserDocument[],
   ): OutputUsersWithPaginationDto {
-    const users: User[] = [];
+    const users: OutputUserDto[] = [];
 
     userDocuments.forEach((document) => {
-      users.push(this.userDocumentToUserClass(document));
+      const curUser: User = this.userDocumentToUserClass(document);
+      const outputUserDto: OutputUserDto = new OutputUserDto(curUser);
+      users.push(outputUserDto);
     });
 
-    const currentDTO: OutputUsersWithPaginationDto =
+    const currentDto: OutputUsersWithPaginationDto =
       new OutputUsersWithPaginationDto(
         pagesCount,
         page,
@@ -98,7 +103,7 @@ export class User {
         users,
       );
 
-    return currentDTO;
+    return currentDto;
   }
 
   static async generateSalt(): Promise<string> {

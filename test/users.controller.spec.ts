@@ -84,7 +84,7 @@ describe('AppController', () => {
     });
   });
 
-  describe('Users [GET]', () => {
+  describe('Users [GET]. Get all users', () => {
     beforeAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
@@ -94,7 +94,7 @@ describe('AppController', () => {
     it('should return status 200 when GET all users', async () => {
       await request(server).get('/users').send().expect(200);
     });
-    it('should return empty array with default pagination. Status 200', async () => {
+    it('should return empty array with default users pagination. Status 200', async () => {
       const emptyUsers = await request(server).get('/users').send().expect(200);
       const defaultOutputDTO: OutputUsersWithPaginationDto =
         new OutputUsersWithPaginationDto(0, 1, 10, 0, []);
@@ -106,16 +106,16 @@ describe('AppController', () => {
       }
     });
     it('Should return 2 users on page. Status 200', async () => {
-      const emptyUsers = await request(server)
+      const users = await request(server)
         .get('/users')
         .send()
         .query({ pageNumber: 1, pageSize: 2 })
         .expect(200);
-      expect(emptyUsers.body.page).toBe(1);
-      expect(emptyUsers.body.pageSize).toBe(2);
-      expect(emptyUsers.body.pagesCount).toBe(10);
-      expect(emptyUsers.body.totalCount).toBe(20);
-      expect(emptyUsers.body.items.length).toEqual(2);
+      expect(users.body.page).toBe(1);
+      expect(users.body.pageSize).toBe(2);
+      expect(users.body.pagesCount).toBe(10);
+      expect(users.body.totalCount).toBe(20);
+      expect(users.body.items.length).toEqual(2);
     });
   });
 });
