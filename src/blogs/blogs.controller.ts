@@ -17,6 +17,7 @@ import {
   OutputBlogsWithPaginationDto,
 } from './dto/output-blog.dto';
 import { PaginationConverter } from '../helpers/pagination';
+import { UpdateBlogInputModelDto } from './dto/update-blog.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -50,9 +51,17 @@ export class BlogsController {
   async addPostByBlogID() {
     return true;
   }
-  @Put()
-  async updateBlogByID() {
-    return true;
+  @Put(':id')
+  @HttpCode(204)
+  async updateBlogByID(
+    @Param('id') blogId: string,
+    @Body() inputModel: UpdateBlogInputModelDto,
+  ) {
+    const result: boolean = await this.blogsService.updateBlogByID(
+      blogId,
+      inputModel,
+    );
+    if (!result) throw new NotFoundException();
   }
   @Delete(':id')
   @HttpCode(204)

@@ -7,15 +7,20 @@ import {
   OutputBlogsWithPaginationDto,
 } from '../src/blogs/dto/output-blog.dto';
 import { CreateBlogInputModelDto } from '../src/blogs/dto/create-blog.dto';
+import { UpdateBlogInputModelDto } from '../src/blogs/dto/update-blog.dto';
 
 jest.setTimeout(600000);
 
-const inputBlogDto: CreateBlogInputModelDto = {
+const createInputBlogDto: CreateBlogInputModelDto = {
   name: 'TestBlog1',
   description: 'Test description for TestBlog1',
   websiteUrl: 'https://TestBlog1URL',
 };
-
+const updateInputBlogDto: UpdateBlogInputModelDto = {
+  name: createInputBlogDto.name + '(UPDATE)',
+  description: createInputBlogDto.description + '(UPDATE)',
+  websiteUrl: createInputBlogDto.websiteUrl,
+};
 describe('AppController', () => {
   let app: INestApplication;
   let server: any;
@@ -45,15 +50,15 @@ describe('AppController', () => {
     it('Should create new blog. And return status 201 [POST]', async () => {
       const outputBlogDto: OutputBlogDto = {
         id: expect.any(String),
-        description: inputBlogDto.description,
-        websiteUrl: inputBlogDto.websiteUrl,
-        name: inputBlogDto.name,
+        description: createInputBlogDto.description,
+        websiteUrl: createInputBlogDto.websiteUrl,
+        name: createInputBlogDto.name,
         isMembership: true,
         createdAt: expect.any(String),
       };
       const createPostResponse = await request(server)
         .post('/blogs')
-        .send(inputBlogDto)
+        .send(createInputBlogDto)
         .expect(201);
       expect(createPostResponse.body).toStrictEqual(outputBlogDto);
     });
@@ -76,7 +81,7 @@ describe('AppController', () => {
     it('should create new blog and return status 201 [POST]', async () => {
       const createBlogResponse = await request(server)
         .post('/blogs')
-        .send(inputBlogDto)
+        .send(createInputBlogDto)
         .expect(201);
       newBlogID = createBlogResponse.body.id;
     });
@@ -88,9 +93,9 @@ describe('AppController', () => {
       const outputBlogObj: OutputBlogDto = {
         id: expect.any(String),
         createdAt: expect.any(String),
-        name: inputBlogDto.name,
-        websiteUrl: inputBlogDto.websiteUrl,
-        description: inputBlogDto.description,
+        name: createInputBlogDto.name,
+        websiteUrl: createInputBlogDto.websiteUrl,
+        description: createInputBlogDto.description,
         isMembership: true,
       };
       expect(foundBlog.body).toStrictEqual(outputBlogObj);
@@ -115,7 +120,10 @@ describe('AppController', () => {
     });
     it('Create 20 new blogs. All response statuses should be 201 [POST]', async () => {
       for (let step = 0; step < 20; step++) {
-        await request(server).post('/blogs').send(inputBlogDto).expect(201);
+        await request(server)
+          .post('/blogs')
+          .send(createInputBlogDto)
+          .expect(201);
       }
     });
     it('Should return 2 blogs on page. Status 200 [GET]', async () => {
@@ -138,7 +146,47 @@ describe('AppController', () => {
     afterAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
-    it('Update blog and return status 204', async () => {});
+    let newBlogID = '';
+    it('should return status 404 when update non existent blog [PUT]', async () => {
+      await request(server)
+        .get('/blogs/' + 'nonExistentId')
+        .send(updateInputBlogDto)
+        .expect(404);
+    });
+    it('should create new blog and return status 201 [POST]', async () => {
+      const createBlogResponse = await request(server)
+        .post('/blogs')
+        .send(createInputBlogDto)
+        .expect(201);
+      newBlogID = createBlogResponse.body.id;
+    });
+    it('should return new blog with response status 200 [GET]', async () => {
+      const foundBlog = await request(server)
+        .get('/blogs/' + newBlogID)
+        .send()
+        .expect(200);
+    });
+    it('Update blog and return status 204 [PUT]', async () => {
+      const updatedBlogResponse = await request(server)
+        .put('/blogs/' + newBlogID)
+        .send(updateInputBlogDto)
+        .expect(204);
+    });
+    it('should return blog with updated data and response status 200 [GET]', async () => {
+      const foundBlog = await request(server)
+        .get('/blogs/' + newBlogID)
+        .send()
+        .expect(200);
+      const outputBlogObj: OutputBlogDto = {
+        id: expect.any(String),
+        createdAt: expect.any(String),
+        name: createInputBlogDto.name + '(UPDATE)',
+        description: createInputBlogDto.description + '(UPDATE)',
+        websiteUrl: createInputBlogDto.websiteUrl,
+        isMembership: true,
+      };
+      expect(foundBlog.body).toStrictEqual(outputBlogObj);
+    });
   });
   //
   describe('Blogs [DELETE]', () => {
@@ -157,7 +205,7 @@ describe('AppController', () => {
     it('should create new blog and return status 201 [POST]', async () => {
       const createBlogResponse = await request(server)
         .post('/blogs')
-        .send(inputBlogDto)
+        .send(createInputBlogDto)
         .expect(201);
       newBlogID = createBlogResponse.body.id;
     });

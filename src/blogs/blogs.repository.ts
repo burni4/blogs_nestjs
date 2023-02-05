@@ -22,6 +22,17 @@ export class BlogsRepository {
       return null;
     }
   }
+  async update(blog: Blog): Promise<Blog | null> {
+    try {
+      const result = await this.BlogModel.updateOne(
+        { id: blog.id },
+        { $set: blog },
+      );
+      return blog;
+    } catch (error) {
+      return null;
+    }
+  }
   async delete(blog: Blog): Promise<boolean> {
     try {
       const result = await this.BlogModel.deleteOne({

@@ -7,6 +7,7 @@ import {
 } from './dto/output-blog.dto';
 import { Blog } from './schemas/blogs.schemas';
 import { PaginationConverter } from '../helpers/pagination';
+import { UpdateBlogInputModelDto } from './dto/update-blog.dto';
 
 @Injectable()
 export class BlogsService {
@@ -46,5 +47,22 @@ export class BlogsService {
 
     const result: boolean = await this.blogsRepository.delete(foundBlog);
     return result;
+  }
+  async updateBlogByID(
+    blogId: string,
+    inputModel: UpdateBlogInputModelDto,
+  ): Promise<boolean> {
+    const foundBlog: Blog | null = await this.blogsRepository.getBlogByID(
+      blogId,
+    );
+    if (!foundBlog) return false;
+
+    foundBlog.updateBlogData(inputModel);
+
+    const result: Blog | null = await this.blogsRepository.update(foundBlog);
+
+    if (!result) return false;
+
+    return true;
   }
 }

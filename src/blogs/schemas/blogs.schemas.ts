@@ -6,6 +6,7 @@ import {
   OutputBlogDto,
   OutputBlogsWithPaginationDto,
 } from '../dto/output-blog.dto';
+import { UpdateBlogInputModelDto } from '../dto/update-blog.dto';
 
 @Schema({ versionKey: false })
 export class Blog {
@@ -25,6 +26,11 @@ export class Blog {
     this.description = inputData.description;
     this.websiteUrl = inputData.websiteUrl;
     this.createdAt = new Date().toISOString();
+  }
+  updateBlogData(inputData: UpdateBlogInputModelDto): void {
+    this.name = inputData.name;
+    this.description = inputData.description;
+    this.websiteUrl = inputData.websiteUrl;
   }
   static blogDocumentToBlogClass(blogDocument: BlogDocument): Blog {
     const newBlog = new Blog();
