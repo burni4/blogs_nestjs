@@ -46,7 +46,7 @@ describe('AppController', () => {
     afterAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
-
+    let newBlogID = '';
     it('Should create new blog. And return status 201 [POST]', async () => {
       const outputBlogDto: OutputBlogDto = {
         id: expect.any(String),
@@ -61,6 +61,13 @@ describe('AppController', () => {
         .send(createInputBlogDto)
         .expect(201);
       expect(createPostResponse.body).toStrictEqual(outputBlogDto);
+      newBlogID = createPostResponse.body.id;
+    });
+    it('should return new blog with response status 200 [GET]', async () => {
+      const foundPost = await request(server)
+        .get('/blogs/' + newBlogID)
+        .send()
+        .expect(200);
     });
   });
 
@@ -139,6 +146,7 @@ describe('AppController', () => {
       expect(blogs.body.items.length).toEqual(2);
     });
   });
+
   describe('Blogs [PUT]', () => {
     beforeAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);

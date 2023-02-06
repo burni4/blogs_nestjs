@@ -3,10 +3,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { CreateUserInputModelDto } from '../src/users/dto/create-user.dto';
-import {
-  OutputUserDto,
-  OutputUsersWithPaginationDto,
-} from '../src/users/dto/output-user.dto';
 
 jest.setTimeout(600000);
 

@@ -7,17 +7,47 @@ import { Post, PostDocument } from './schemas/posts.schemas';
 export class PostsRepository {
   constructor(
     @InjectModel(Post.name)
-    private PostsModel: Model<PostDocument>,
+    private PostModel: Model<PostDocument>,
   ) {}
 
   async deleteAllPosts(): Promise<boolean> {
-    await this.PostsModel.deleteMany({});
+    await this.PostModel.deleteMany({});
     return true;
+  }
+  async delete(post: Post): Promise<boolean> {
+    try {
+      const result = await this.PostModel.deleteOne({
+        id: post.id,
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
   async save(post: Post): Promise<Post | null> {
     try {
-      const newPost = new this.PostsModel({ ...post });
+      const newPost = new this.PostModel({ ...post });
       await newPost.save();
+      return post;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async getPostByID(postId: string): Promise<Post | null> {
+    const postFromDB: PostDocument = await this.PostModel.findOne({
+      id: postId,
+    }).exec();
+    if (!postFromDB) return null;
+    const post: Post = Post.postDocumentToPostClass(postFromDB);
+    return post;
+  }
+  async update(post: Post): Promise<Post | null> {
+    try {
+      const result = await this.PostModel.updateOne(
+        { id: post.id },
+        { $set: post },
+      );
       return post;
     } catch (error) {
       return null;
