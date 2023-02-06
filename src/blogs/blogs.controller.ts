@@ -18,19 +18,33 @@ import {
 } from './dto/output-blog.dto';
 import { PaginationConverter } from '../helpers/pagination';
 import { UpdateBlogInputModelDto } from './dto/update-blog.dto';
+import { OutputPostsWithPaginationDto } from '../posts/dto/output-post.dto';
+import { PostsService } from '../posts/posts.service';
 
 @Controller('blogs')
 export class BlogsController {
-  constructor(protected blogsService: BlogsService) {}
+  constructor(
+    protected blogsService: BlogsService,
+    protected postsService: PostsService,
+  ) {}
   @Get()
   async getBlogs(@Query() query: PaginationConverter) {
     const result: OutputBlogsWithPaginationDto =
       await this.blogsService.getBlogs(query);
     return result;
   }
-  @Get()
-  async getAllPostsByBlogID() {
-    return true;
+  @Get(':id/posts')
+  async getAllPostsByBlogID(
+    @Param('id') blogId: string,
+    @Query() query: PaginationConverter,
+  ) {
+    const foundBlog: OutputBlogDto | null = await this.blogsService.getBlogByID(
+      blogId,
+    );
+    if (!foundBlog) throw new NotFoundException();
+    const result: OutputPostsWithPaginationDto =
+      await this.postsService.getPosts(query, blogId);
+    return result;
   }
   @Get(':id')
   async getBlogByID(@Param('id') blogId: string) {

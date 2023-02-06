@@ -20,12 +20,13 @@ export class PostsService {
   }
   async getPosts(
     paginationParams: PaginationConverter,
+    blogId = undefined,
   ): Promise<OutputPostsWithPaginationDto> {
     const paginator: PaginationConverter = new PaginationConverter(
       paginationParams,
     );
     const result: OutputPostsWithPaginationDto =
-      await this.postsRepository.getPosts(paginator);
+      await this.postsRepository.getPosts(paginator, blogId);
     return result;
   }
   async addPost(

@@ -46,9 +46,12 @@ export class PostsRepository {
   }
   async getPosts(
     paginator: PaginationConverter,
+    blogId: string | undefined,
   ): Promise<OutputPostsWithPaginationDto> {
-    const filter = {};
-
+    let filter = {};
+    if (blogId) {
+      filter = { blogId: blogId };
+    }
     const foundPostsInDB = await this.PostModel.find(filter, {
       projection: { _id: 0 },
     })

@@ -28,9 +28,13 @@ export class PostsController {
       await this.postsService.getPosts(query);
     return result;
   }
-  @Get()
-  async getAllCommentsByPostID() {
-    return true;
+  @Get(':id/comments')
+  async getAllCommentsByPostID(@Param('id') postId: string) {
+    const result: OutputPostDto | null = await this.postsService.getPostByID(
+      postId,
+    );
+    if (!result) throw new NotFoundException();
+    return result;
   }
   @Get(':id')
   async getPostByID(@Param('id') postId: string) {
