@@ -13,7 +13,7 @@ export class OutputBlogDto {
     this.description = blog.description;
     this.websiteUrl = blog.websiteUrl;
     this.createdAt = blog.createdAt;
-    this.isMembership = true;
+    this.isMembership = false;
   }
 }
 
