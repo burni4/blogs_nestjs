@@ -30,6 +30,7 @@ export class PostsController {
   }
   @Get(':id/comments')
   async getAllCommentsByPostID(@Param('id') postId: string) {
+    //TODO create e2e tests
     const result: OutputPostDto | null = await this.postsService.getPostByID(
       postId,
     );

@@ -42,6 +42,7 @@ export class BlogsController {
     @Param('id') blogId: string,
     @Query() query: PaginationConverter,
   ) {
+    //TODO create e2e tests
     const foundBlog: OutputBlogDto | null = await this.blogsService.getBlogByID(
       blogId,
     );
@@ -65,11 +66,12 @@ export class BlogsController {
     );
     return result;
   }
-  @Post(':id')
+  @Post(':id/posts')
   async addPostByBlogID(
     @Param('id') blogId: string,
     @Body() inputModel: CreatePostInputModelDto,
   ) {
+    //TODO create e2e tests
     const foundBlog: OutputBlogDto | null = await this.blogsService.getBlogByID(
       blogId,
     );
