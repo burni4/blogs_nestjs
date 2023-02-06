@@ -33,7 +33,9 @@ export class PostsService {
     createPostDto: CreatePostInputModelDto,
     blogId = undefined,
   ): Promise<OutputPostDto | null> {
-    if (blogId) createPostDto.blogId = blogId;
+    // if (blogId) createPostDto.blogId = blogId;
+    // TODO: get blog for blogName and validation
+    // const blog = await
     const post: Post = new Post();
     post.fillNewPostData(createPostDto);
     const result: Post | null = await this.postsRepository.save(post);

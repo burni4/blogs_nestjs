@@ -34,33 +34,53 @@ export class UsersRepository {
   async findUsers(
     paginator: PaginationConverter,
   ): Promise<OutputUsersWithPaginationDto> {
-    let filter = {};
-    const expressions = [];
-    if (paginator.searchLoginTerm) {
-      expressions.push({
-        'accountData.login': {
-          $regex: paginator.searchLoginTerm,
-          $options: 'i',
-        },
-      });
-    }
-    if (paginator.searchEmailTerm) {
-      expressions.push({
-        'accountData.email': {
-          $regex: paginator.searchEmailTerm,
-          $options: 'i',
-        },
-      });
-    }
+    // let filter = {};
+    // const expressions = [];
+    // if (paginator.searchLoginTerm) {
+    //   expressions.push({
+    //     'accountData.login': {
+    //       $regex: paginator.searchLoginTerm,
+    //       $options: 'i',
+    //     },
+    //   });
+    // }
+    // if (paginator.searchEmailTerm) {
+    //   expressions.push({
+    //     'accountData.email': {
+    //       $regex: paginator.searchEmailTerm,
+    //       $options: 'i',
+    //     },
+    //   });
+    // }
+    //
+    // if (expressions.length > 0) {
+    //   filter = { $or: expressions };
+    // }
 
-    if (expressions.length > 0) {
-      filter = { $or: expressions };
-    }
+    const filter = {
+      $and: [
+        {
+          'accountData.login': {
+            $regex: paginator.searchLoginTerm ?? '',
+            $options: 'i',
+          },
+        },
+        {
+          'accountData.email': {
+            $regex: paginator.searchEmailTerm ?? '',
+            $options: 'i',
+          },
+        },
+      ],
+    };
 
     const foundUsersInDB = await this.UserModel.find(filter, {
       projection: { _id: 0 },
     })
-      .sort({ [paginator.sortBy]: paginator.sortDirection === 'asc' ? 1 : -1 })
+      .sort({
+        [`accountData.${paginator.sortBy}`]:
+          paginator.sortDirection === 'asc' ? 1 : -1,
+      })
       .skip(paginator.getSkipCount())
       .limit(paginator.pageSize)
       .exec();

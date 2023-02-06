@@ -221,7 +221,9 @@ describe('AppController', () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
     it('should return status 200 when GET all posts [GET]', async () => {
-      await request(server).get('/posts').send().expect(200);
+      const response = await request(server).get('/posts').send();
+      expect(response.status).toBe(200);
+      expect(response.body.items).toHaveLength(0);
     });
     it('should return empty array with default posts pagination. Status 200 [GET]', async () => {
       const emptyPosts = await request(server).get('/posts').send().expect(200);
@@ -248,6 +250,16 @@ describe('AppController', () => {
       expect(posts.body.pagesCount).toBe(10);
       expect(posts.body.totalCount).toBe(20);
       expect(posts.body.items.length).toEqual(2);
+    });
+    it('should return posts sorted by asc', async () => {
+      const posts = await request(server)
+        .get('/posts')
+        .send()
+        .query({ sortDirection: 'asc' })
+        .expect(200);
+
+      console.log(posts.body.items);
+      expect(posts).toBeDefined();
     });
   });
 });
