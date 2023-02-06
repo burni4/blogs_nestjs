@@ -49,6 +49,7 @@ export class PostsController {
   async addPost(@Body() inputModel: CreatePostInputModelDto) {
     const result: OutputPostDto | null = await this.postsService.addPost(
       inputModel,
+      inputModel.blogId,
     );
     return result;
   }

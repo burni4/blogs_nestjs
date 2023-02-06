@@ -8,10 +8,15 @@ import { Post } from './schemas/posts.schemas';
 import { CreatePostInputModelDto } from './dto/create-post.dto';
 import { UpdatePostInputModelDto } from './dto/update-post.dto';
 import { PaginationConverter } from '../helpers/pagination';
+import { Blog } from '../blogs/schemas/blogs.schemas';
+import { BlogsRepository } from '../blogs/blogs.repository';
 
 @Injectable()
 export class PostsService {
-  constructor(protected postsRepository: PostsRepository) {}
+  constructor(
+    protected postsRepository: PostsRepository,
+    protected blogsRepository: BlogsRepository,
+  ) {}
   async getPostByID(postId: string): Promise<OutputPostDto | null> {
     const result: Post | null = await this.postsRepository.getPostByID(postId);
     if (!result) return null;
@@ -31,11 +36,11 @@ export class PostsService {
   }
   async addPost(
     createPostDto: CreatePostInputModelDto,
-    blogId = undefined,
+    blogId: string,
   ): Promise<OutputPostDto | null> {
-    if (blogId) createPostDto.blogId = blogId;
-    // TODO: get blog for blogName and validation
-    // const blog = await
+    createPostDto.blogId = blogId;
+    const blog: Blog = await this.blogsRepository.getBlogByID(blogId);
+    createPostDto.blogName = blog.name;
     const post: Post = new Post();
     post.fillNewPostData(createPostDto);
     const result: Post | null = await this.postsRepository.save(post);
