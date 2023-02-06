@@ -11,16 +11,22 @@ import {
   Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { OutputPostDto } from './dto/output-post.dto';
+import {
+  OutputPostDto,
+  OutputPostsWithPaginationDto,
+} from './dto/output-post.dto';
 import { CreatePostInputModelDto } from './dto/create-post.dto';
 import { UpdatePostInputModelDto } from './dto/update-post.dto';
+import { PaginationConverter } from '../helpers/pagination';
 
 @Controller('posts')
 export class PostsController {
   constructor(protected postsService: PostsService) {}
   @Get()
-  async getPosts() {
-    return true;
+  async getPosts(@Query() query: PaginationConverter) {
+    const result: OutputPostsWithPaginationDto =
+      await this.postsService.getPosts(query);
+    return result;
   }
   @Get()
   async getAllCommentsByPostID() {

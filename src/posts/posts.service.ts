@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PostsRepository } from './posts.repository';
-import { OutputPostDto } from './dto/output-post.dto';
+import {
+  OutputPostDto,
+  OutputPostsWithPaginationDto,
+} from './dto/output-post.dto';
 import { Post } from './schemas/posts.schemas';
 import { CreatePostInputModelDto } from './dto/create-post.dto';
 import { UpdatePostInputModelDto } from './dto/update-post.dto';
+import { PaginationConverter } from '../helpers/pagination';
 
 @Injectable()
 export class PostsService {
@@ -13,6 +17,16 @@ export class PostsService {
     if (!result) return null;
     const outputPostDto: OutputPostDto = new OutputPostDto(result);
     return outputPostDto;
+  }
+  async getPosts(
+    paginationParams: PaginationConverter,
+  ): Promise<OutputPostsWithPaginationDto> {
+    const paginator: PaginationConverter = new PaginationConverter(
+      paginationParams,
+    );
+    const result: OutputPostsWithPaginationDto =
+      await this.postsRepository.getPosts(paginator);
+    return result;
   }
   async addPost(
     createPostDto: CreatePostInputModelDto,

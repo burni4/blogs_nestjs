@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Post, PostDocument } from './schemas/posts.schemas';
+import { PaginationConverter } from '../helpers/pagination';
+import { OutputPostsWithPaginationDto } from './dto/output-post.dto';
 
 @Injectable()
 export class PostsRepository {
@@ -41,6 +43,29 @@ export class PostsRepository {
     if (!postFromDB) return null;
     const post: Post = Post.postDocumentToPostClass(postFromDB);
     return post;
+  }
+  async getPosts(
+    paginator: PaginationConverter,
+  ): Promise<OutputPostsWithPaginationDto> {
+    const filter = {};
+
+    const foundPostsInDB = await this.PostModel.find(filter, {
+      projection: { _id: 0 },
+    })
+      .sort({ [paginator.sortBy]: paginator.sortDirection === 'asc' ? 1 : -1 })
+      .skip(paginator.getSkipCount())
+      .limit(paginator.pageSize)
+      .exec();
+
+    const totalCount = await this.PostModel.count(filter);
+
+    return Post.mapPostDocumentsToOutputPostsWithPaginationDto(
+      paginator.getPageCount(totalCount),
+      paginator.pageNumber,
+      paginator.pageSize,
+      totalCount,
+      foundPostsInDB,
+    );
   }
   async update(post: Post): Promise<Post | null> {
     try {

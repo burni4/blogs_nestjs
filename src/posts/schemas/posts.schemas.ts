@@ -2,8 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { randomUUID } from 'crypto';
 import { CreatePostInputModelDto } from '../dto/create-post.dto';
-import { UpdateBlogInputModelDto } from '../../blogs/dto/update-blog.dto';
 import { UpdatePostInputModelDto } from '../dto/update-post.dto';
+import {
+  OutputPostDto,
+  OutputPostsWithPaginationDto,
+} from '../dto/output-post.dto';
 
 @Schema({ versionKey: false })
 export class Post {
@@ -49,6 +52,29 @@ export class Post {
     this.shortDescription = inputData.shortDescription;
     this.blogId = inputData.blogId;
     this.content = inputData.content;
+  }
+  static mapPostDocumentsToOutputPostsWithPaginationDto(
+    pagesCount,
+    page,
+    pageSize,
+    totalCount,
+    postDocuments: PostDocument[],
+  ): OutputPostsWithPaginationDto {
+    const posts: OutputPostDto[] = [];
+    postDocuments.forEach((document) => {
+      const curPost: Post = this.postDocumentToPostClass(document);
+      const outputPostDto: OutputPostDto = new OutputPostDto(curPost);
+      posts.push(outputPostDto);
+    });
+    const currentDto: OutputPostsWithPaginationDto =
+      new OutputPostsWithPaginationDto(
+        pagesCount,
+        page,
+        pageSize,
+        totalCount,
+        posts,
+      );
+    return currentDto;
   }
 }
 
