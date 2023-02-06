@@ -18,8 +18,12 @@ import {
 } from './dto/output-blog.dto';
 import { PaginationConverter } from '../helpers/pagination';
 import { UpdateBlogInputModelDto } from './dto/update-blog.dto';
-import { OutputPostsWithPaginationDto } from '../posts/dto/output-post.dto';
+import {
+  OutputPostDto,
+  OutputPostsWithPaginationDto,
+} from '../posts/dto/output-post.dto';
 import { PostsService } from '../posts/posts.service';
+import { CreatePostInputModelDto } from '../posts/dto/create-post.dto';
 
 @Controller('blogs')
 export class BlogsController {
@@ -61,9 +65,20 @@ export class BlogsController {
     );
     return result;
   }
-  @Post()
-  async addPostByBlogID() {
-    return true;
+  @Post(':id')
+  async addPostByBlogID(
+    @Param('id') blogId: string,
+    @Body() inputModel: CreatePostInputModelDto,
+  ) {
+    const foundBlog: OutputBlogDto | null = await this.blogsService.getBlogByID(
+      blogId,
+    );
+    if (!foundBlog) throw new NotFoundException();
+    const result: OutputPostDto | null = await this.postsService.addPost(
+      inputModel,
+      blogId,
+    );
+    return result;
   }
   @Put(':id')
   @HttpCode(204)
