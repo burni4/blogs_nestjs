@@ -42,7 +42,6 @@ export class Post {
     this.shortDescription = inputData.shortDescription;
     this.content = inputData.content;
     this.blogId = inputData.blogId;
-    this.blogName = inputData.blogName;
     this.createdAt = new Date().toISOString();
   }
 

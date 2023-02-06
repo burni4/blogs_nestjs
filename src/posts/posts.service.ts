@@ -39,10 +39,11 @@ export class PostsService {
     blogId: string,
   ): Promise<OutputPostDto | null> {
     createPostDto.blogId = blogId;
-    const blog: Blog = await this.blogsRepository.getBlogByID(blogId);
-    createPostDto.blogName = blog.name;
     const post: Post = new Post();
     post.fillNewPostData(createPostDto);
+    const blog: Blog = await this.blogsRepository.getBlogByID(blogId);
+    if (!blog) return null;
+    post.blogName = blog.name;
     const result: Post | null = await this.postsRepository.save(post);
     if (!result) return null;
     const outputPostDto: OutputPostDto = new OutputPostDto(post);
@@ -67,7 +68,8 @@ export class PostsService {
     if (!foundPost) return false;
 
     foundPost.updatePostData(inputModel);
-
+    const blog: Blog = await this.blogsRepository.getBlogByID(foundPost.blogId);
+    foundPost.blogName = blog.name;
     const result: Post | null = await this.postsRepository.update(foundPost);
 
     if (!result) return false;

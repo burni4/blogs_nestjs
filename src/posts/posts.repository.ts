@@ -48,7 +48,6 @@ export class PostsRepository {
     paginator: PaginationConverter,
     blogId: string | undefined,
   ): Promise<OutputPostsWithPaginationDto> {
-    console.log(paginator);
     let filter = {};
     if (blogId) {
       filter = { blogId: blogId };

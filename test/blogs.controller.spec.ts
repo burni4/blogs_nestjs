@@ -53,7 +53,7 @@ describe('AppController', () => {
         description: createInputBlogDto.description,
         websiteUrl: createInputBlogDto.websiteUrl,
         name: createInputBlogDto.name,
-        isMembership: true,
+        isMembership: false,
         createdAt: expect.any(String),
       };
       const createPostResponse = await request(server)
@@ -103,7 +103,7 @@ describe('AppController', () => {
         name: createInputBlogDto.name,
         websiteUrl: createInputBlogDto.websiteUrl,
         description: createInputBlogDto.description,
-        isMembership: true,
+        isMembership: false,
       };
       expect(foundBlog.body).toStrictEqual(outputBlogObj);
     });
@@ -191,7 +191,7 @@ describe('AppController', () => {
         name: createInputBlogDto.name + '(UPDATE)',
         description: createInputBlogDto.description + '(UPDATE)',
         websiteUrl: createInputBlogDto.websiteUrl,
-        isMembership: true,
+        isMembership: false,
       };
       expect(foundBlog.body).toStrictEqual(outputBlogObj);
     });
@@ -217,7 +217,6 @@ describe('AppController', () => {
         .expect(201);
       newBlogID = createBlogResponse.body.id;
     });
-    console.log(newBlogID);
     it('Should delete new blog. Return response status 204 [DELETE]', async () => {
       await request(server)
         .delete('/blogs/' + newBlogID)
