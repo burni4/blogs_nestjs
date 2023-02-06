@@ -58,7 +58,7 @@ export class UsersRepository {
     // }
 
     const filter = {
-      $and: [
+      $or: [
         {
           'accountData.login': {
             $regex: paginator.searchLoginTerm ?? '',
