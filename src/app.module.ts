@@ -24,6 +24,7 @@ import { PostsService } from './posts/posts.service';
 import { PostsRepository } from './posts/posts.repository';
 import { CommentsService } from './comments/comments.service';
 import { CommentsRepository } from './comments/comments.repository';
+import { AuthorizationController } from './authorization/authorization.controller';
 
 const mongoURILocalhost = 'mongodb://0.0.0.0:27017';
 const dbName = 'nest-homeworks-blogs';
@@ -47,6 +48,7 @@ console.log(process.env.mongoURIAtlas);
     BlogsController,
     PostsController,
     CommentsController,
+    AuthorizationController,
   ],
   providers: [
     AppService,

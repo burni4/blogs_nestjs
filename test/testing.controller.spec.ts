@@ -1,8 +1,9 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { CreateUserInputModelDto } from '../src/users/dto/create-user.dto';
+import { connectExternalComponents } from '../src/main';
 
 jest.setTimeout(60000);
 describe('AppController', () => {
@@ -14,7 +15,7 @@ describe('AppController', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-
+    connectExternalComponents(app);
     await app.init();
     server = app.getHttpServer();
   });

@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
@@ -8,6 +8,7 @@ import {
 } from '../src/blogs/dto/output-blog.dto';
 import { CreateBlogInputModelDto } from '../src/blogs/dto/create-blog.dto';
 import { UpdateBlogInputModelDto } from '../src/blogs/dto/update-blog.dto';
+import { connectExternalComponents } from '../src/main';
 
 jest.setTimeout(600000);
 
@@ -30,6 +31,7 @@ describe('AppController', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    connectExternalComponents(app);
 
     await app.init();
     server = app.getHttpServer();
@@ -37,6 +39,29 @@ describe('AppController', () => {
 
   afterAll(async () => {
     app.close();
+  });
+
+  //TODO
+  describe('Test', () => {
+    beforeAll(async () => {
+      await request(server).delete('/testing/all-data').expect(204);
+    });
+    afterAll(async () => {
+      await request(server).delete('/testing/all-data').expect(204);
+    });
+
+    const createTestInputBlogDto: CreateBlogInputModelDto = {
+      name: 'TestBlog 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15',
+      description: 'Test description for TestBlog1',
+      websiteUrl: '123',
+    };
+
+    it('should return status 400 [POST]', async () => {
+      const createBlogResponse = await request(server)
+        .post('/blogs')
+        .send(createTestInputBlogDto)
+        .expect(400);
+    });
   });
 
   describe('Blogs [POST]. Create new blog', () => {
