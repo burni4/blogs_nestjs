@@ -15,7 +15,7 @@ jest.setTimeout(600000);
 const createInputBlogDto: CreateBlogInputModelDto = {
   name: 'TestBlog1',
   description: 'Test description for TestBlog1',
-  websiteUrl: 'https://TestBlog1URL',
+  websiteUrl: 'https://TestBlog1URL.com',
 };
 
 const createInputPostDto: CreatePostInputModelDto = {
@@ -40,13 +40,13 @@ describe('AppController', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    connectExternalComponents(app);
+    app = connectExternalComponents(app);
     await app.init();
     server = app.getHttpServer();
   });
 
   afterAll(async () => {
-    app.close();
+    await app.close();
   });
 
   describe('Posts [POST]', () => {
@@ -69,8 +69,9 @@ describe('AppController', () => {
     it('Should create new post. And return status 201 [POST]', async () => {
       const createPostResponse = await request(server)
         .post('/posts')
-        .send(createInputPostDto)
-        .expect(201);
+        .send(createInputPostDto);
+
+      expect(createPostResponse.status).toBe(201);
       newPostID = createPostResponse.body.id;
     });
     it('should return new post with response status 200 [GET]', async () => {

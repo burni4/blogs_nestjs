@@ -22,7 +22,7 @@ describe('AppController', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    connectExternalComponents(app);
+    app = connectExternalComponents(app);
     await app.init();
     server = app.getHttpServer();
   });

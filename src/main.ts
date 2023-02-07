@@ -5,12 +5,13 @@ import {
   ExceptionErrorsMessages,
   HttpExceptionFilter,
 } from './exception.fiter';
+import { useContainer } from 'class-validator';
 
 const PORT = process.env.PORT || 3000;
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const rawApp = await NestFactory.create(AppModule);
 
-  connectExternalComponents(app);
+  const app = connectExternalComponents(rawApp);
 
   await app.listen(PORT);
 }
@@ -26,5 +27,7 @@ export function connectExternalComponents(app: INestApplication) {
     }),
   );
   app.useGlobalFilters(new HttpExceptionFilter());
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
+  return app;
 }
 bootstrap();
