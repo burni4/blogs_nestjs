@@ -7,13 +7,13 @@ export class PaginationConverter {
   @IsOptional()
   sortDirection: string | null = 'desc';
   @Transform(({ value }) => {
-    return parseInt(value, 10);
+    return toInt(value, 1);
   })
   @IsNumber()
   @IsOptional()
   pageNumber: number | null = 1;
   @Transform(({ value }) => {
-    return toInt(value);
+    return toInt(value, 10);
   })
   @IsNumber()
   @IsOptional()
@@ -36,13 +36,13 @@ export class PaginationConverter {
   }
 }
 
-const toInt = (value: string) => {
+const toInt = (value: string, defaultValue = 0) => {
   const newValue = parseInt(value, 10);
   if (Number.isNaN(newValue)) {
-    return 1;
+    return defaultValue;
   }
   if (newValue <= 0) {
-    return 1;
+    return defaultValue;
   }
   return newValue;
 };
