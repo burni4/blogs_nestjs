@@ -17,6 +17,6 @@ export class AuthGuard implements CanActivate {
     const request: Request = context.switchToHttp().getRequest();
     //throw new UnauthorizedException();
     //return validateRequest(request);
-    return false;
+    return true;
   }
 }

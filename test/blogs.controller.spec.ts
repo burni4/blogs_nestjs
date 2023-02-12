@@ -41,7 +41,7 @@ describe('AppController', () => {
     app.close();
   });
 
-  //TODO
+  //TODO delete only for tests
   describe('Test', () => {
     beforeAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
