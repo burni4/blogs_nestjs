@@ -17,10 +17,7 @@ export class UsersService {
   async findUsers(
     paginationParams: PaginationConverter,
   ): Promise<OutputUsersWithPaginationDto> {
-    const paginator: PaginationConverter = new PaginationConverter(
-      paginationParams,
-    );
-    return await this.usersRepository.findUsers(paginator);
+    return await this.usersRepository.findUsers(paginationParams);
   }
   async addUsers(
     createUserDto: CreateUserInputModelDto,

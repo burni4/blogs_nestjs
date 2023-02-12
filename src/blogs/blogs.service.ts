@@ -32,11 +32,8 @@ export class BlogsService {
   async getBlogs(
     paginationParams: PaginationConverter,
   ): Promise<OutputBlogsWithPaginationDto> {
-    const paginator: PaginationConverter = new PaginationConverter(
-      paginationParams,
-    );
     const result: OutputBlogsWithPaginationDto =
-      await this.blogsRepository.getBlogs(paginator);
+      await this.blogsRepository.getBlogs(paginationParams);
     return result;
   }
   async deleteBlogByID(blogId: string): Promise<boolean> {

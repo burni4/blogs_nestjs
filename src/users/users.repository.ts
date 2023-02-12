@@ -34,29 +34,6 @@ export class UsersRepository {
   async findUsers(
     paginator: PaginationConverter,
   ): Promise<OutputUsersWithPaginationDto> {
-    // let filter = {};
-    // const expressions = [];
-    // if (paginator.searchLoginTerm) {
-    //   expressions.push({
-    //     'accountData.login': {
-    //       $regex: paginator.searchLoginTerm,
-    //       $options: 'i',
-    //     },
-    //   });
-    // }
-    // if (paginator.searchEmailTerm) {
-    //   expressions.push({
-    //     'accountData.email': {
-    //       $regex: paginator.searchEmailTerm,
-    //       $options: 'i',
-    //     },
-    //   });
-    // }
-    //
-    // if (expressions.length > 0) {
-    //   filter = { $or: expressions };
-    // }
-
     const filter = {
       $or: [
         {

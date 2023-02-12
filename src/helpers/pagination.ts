@@ -1,48 +1,32 @@
-export class PaginationConverter {
-  sortBy: string;
-  sortDirection: string;
-  pageNumber: number;
-  pageSize: number;
-  searchNameTerm: string | null;
-  searchLoginTerm: string | null;
-  searchEmailTerm: string | null;
+import { IsNumber, IsOptional } from 'class-validator';
+import { Transform } from 'class-transformer';
 
-  constructor(obj) {
-    if (typeof obj['sortBy'] !== 'undefined') {
-      this.sortBy = obj.sortBy;
-    } else {
-      this.sortBy = 'createdAt';
-    }
-    if (typeof obj['sortDirection'] !== 'undefined') {
-      this.sortDirection = obj.sortDirection;
-    } else {
-      this.sortDirection = 'desc';
-    }
-    if (typeof obj['pageNumber'] !== 'undefined') {
-      this.pageNumber = +obj.pageNumber;
-    } else {
-      this.pageNumber = 1;
-    }
-    if (typeof obj['pageSize'] !== 'undefined') {
-      this.pageSize = +obj.pageSize;
-    } else {
-      this.pageSize = 10;
-    }
-    if (typeof obj['searchLoginTerm'] !== 'undefined') {
-      this.searchLoginTerm = obj.searchLoginTerm;
-    } else {
-      this.searchLoginTerm = null;
-    }
-    if (typeof obj['searchEmailTerm'] !== 'undefined') {
-      this.searchEmailTerm = obj.searchEmailTerm;
-    } else {
-      this.searchEmailTerm = null;
-    }
-    if (typeof obj['searchNameTerm'] !== 'undefined') {
-      this.searchNameTerm = obj.searchNameTerm;
-    } else {
-      this.searchNameTerm = null;
-    }
+export class PaginationConverter {
+  @IsOptional()
+  sortBy: string | null = 'createdAt';
+  @IsOptional()
+  sortDirection: string | null = 'desc';
+  @Transform(({ value }) => {
+    return parseInt(value, 10);
+  })
+  @IsNumber()
+  @IsOptional()
+  pageNumber: number | null = 1;
+  @Transform(({ value }) => {
+    return toInt(value);
+  })
+  @IsNumber()
+  @IsOptional()
+  pageSize: number | null = 10;
+  @IsOptional()
+  searchNameTerm: string | null = null;
+  @IsOptional()
+  searchLoginTerm: string | null = null;
+  @IsOptional()
+  searchEmailTerm: string | null = null;
+
+  constructor(obj: any) {
+    console.log('constructor work', obj);
   }
   getSkipCount() {
     return (this.pageNumber - 1) * this.pageSize;
@@ -51,3 +35,14 @@ export class PaginationConverter {
     return Math.ceil(totalCount / this.pageSize);
   }
 }
+
+const toInt = (value: string) => {
+  const newValue = parseInt(value, 10);
+  if (Number.isNaN(newValue)) {
+    return 1;
+  }
+  if (newValue <= 0) {
+    return 1;
+  }
+  return newValue;
+};
