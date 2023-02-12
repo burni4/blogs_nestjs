@@ -25,9 +25,6 @@ export class PaginationConverter {
   @IsOptional()
   searchEmailTerm: string | null = null;
 
-  constructor(obj: any) {
-    console.log('constructor work', obj);
-  }
   getSkipCount() {
     return (this.pageNumber - 1) * this.pageSize;
   }

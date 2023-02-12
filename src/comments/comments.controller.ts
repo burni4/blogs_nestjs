@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Delete, Get, Put } from '@nestjs/common';
 
 import { CommentsService } from './comments.service';
 
@@ -8,6 +8,18 @@ export class CommentsController {
 
   @Get()
   async getCommentByID() {
+    return true;
+  }
+  @Put()
+  async updateCommentByID() {
+    return true;
+  }
+  @Delete()
+  async deleteCommentByID() {
+    return true;
+  }
+  @Put()
+  async updateLikeStatus() {
     return true;
   }
 }

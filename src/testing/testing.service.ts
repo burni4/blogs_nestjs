@@ -3,6 +3,7 @@ import { UsersRepository } from '../users/users.repository';
 import { BlogsRepository } from '../blogs/blogs.repository';
 import { PostsRepository } from '../posts/posts.repository';
 import { CommentsRepository } from '../comments/comments.repository';
+import { SecurityDevicesRepository } from '../securityDevices/securityDevices.repository';
 
 @Injectable()
 export class TestingService {
@@ -11,6 +12,7 @@ export class TestingService {
     protected blogsRepository: BlogsRepository,
     protected postsRepository: PostsRepository,
     protected commentsRepository: CommentsRepository,
+    protected securityDevicesRepository: SecurityDevicesRepository,
   ) {}
   async deleteAllData(): Promise<boolean> {
     const usersDeleted: boolean = await this.usersRepository.deleteAllUsers();
@@ -18,6 +20,14 @@ export class TestingService {
     const postsDeleted: boolean = await this.postsRepository.deleteAllPosts();
     const commentsDeleted: boolean =
       await this.commentsRepository.deleteAllComments();
-    return usersDeleted && blogsDeleted && postsDeleted && commentsDeleted;
+    const securityDevicesDeleted: boolean =
+      await this.securityDevicesRepository.deleteAll();
+    return (
+      usersDeleted &&
+      blogsDeleted &&
+      postsDeleted &&
+      commentsDeleted &&
+      securityDevicesDeleted
+    );
   }
 }

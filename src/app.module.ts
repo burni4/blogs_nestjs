@@ -29,20 +29,30 @@ import { CommentsService } from './comments/comments.service';
 import { CommentsRepository } from './comments/comments.repository';
 import { AuthorizationController } from './authorization/authorization.controller';
 import { customValidators } from './helpers/custom-validators';
+import {
+  SecurityDevice,
+  SecurityDeviceSchema,
+} from './securityDevices/schemas/securityDevices.schema';
+import { SecurityDevicesController } from './securityDevices/securityDevices.controller';
+import { SecurityDevicesService } from './securityDevices/securityDevices.service';
+import { SecurityDevicesRepository } from './securityDevices/securityDevices.repository';
 
 const mongoURILocalhost = 'mongodb://0.0.0.0:27017';
 const dbName = 'nest-homeworks-blogs';
 const mongoUri = process.env.mongoURIAtlas || mongoURILocalhost;
+
+const mongoSchemas = [
+  { name: User.name, schema: UserSchema },
+  { name: Blog.name, schema: BlogSchema },
+  { name: Post.name, schema: PostSchema },
+  { name: CommentManager.name, schema: CommentSchema },
+  { name: SecurityDevice.name, schema: SecurityDeviceSchema },
+];
 @Module({
   imports: [
     configModule,
     MongooseModule.forRoot(mongoUri),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    MongooseModule.forFeature([{ name: Blog.name, schema: BlogSchema }]),
-    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]),
-    MongooseModule.forFeature([
-      { name: CommentManager.name, schema: CommentSchema },
-    ]),
+    MongooseModule.forFeature(mongoSchemas),
   ],
   controllers: [
     AppController,
@@ -51,6 +61,7 @@ const mongoUri = process.env.mongoURIAtlas || mongoURILocalhost;
     BlogsController,
     PostsController,
     CommentsController,
+    SecurityDevicesController,
     AuthorizationController,
   ],
   providers: [
@@ -64,6 +75,9 @@ const mongoUri = process.env.mongoURIAtlas || mongoURILocalhost;
     PostsRepository,
     CommentsService,
     CommentsRepository,
+    SecurityDevicesController,
+    SecurityDevicesService,
+    SecurityDevicesRepository,
     ...customValidators,
   ],
 })

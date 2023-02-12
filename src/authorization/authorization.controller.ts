@@ -1,8 +1,25 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from './authorization.guard';
-@UseGuards(AuthGuard)
+
 @Controller('auth')
 export class AuthorizationController {
+  @UseGuards(AuthGuard)
   @Get('/me')
   async getInformationAboutCurrentUser() {}
+  @Post('/password-recovery')
+  async sendPasswordRecoveryCodeOnEmail() {}
+  @Post('/new-password')
+  async updatePasswordByRecoveryCode() {}
+  @Post('/login')
+  async loginUser() {}
+  @Post('/refresh-token')
+  async updateRefreshToken() {}
+  @Post('/registration-confirmation')
+  async confirmEmailByCode() {}
+  @Post('/registration')
+  async registerUser() {}
+  @Post('/registration-email-resending')
+  async resendConfirmationCodeOnEmail() {}
+  @Post('/logout')
+  async logoutUser() {}
 }
