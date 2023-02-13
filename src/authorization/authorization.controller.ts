@@ -44,6 +44,7 @@ export class AuthorizationController {
     return outputUser;
   }
   @Post('/registration')
+  @HttpCode(204)
   async registerUser(@Body() inputModel: CreateUserInputModelDto) {
     const outputUserDto: OutputUserDto | null = await this.usersService.addUser(
       inputModel,
