@@ -13,6 +13,17 @@ export class OutputUserDto {
   }
 }
 
+export class OutputUserInformationDto {
+  userid: string;
+  login: string;
+  email: string;
+  constructor(user: User) {
+    this.userid = user.id;
+    this.login = user.accountData.login;
+    this.email = user.accountData.email;
+  }
+}
+
 export class OutputUsersWithPaginationDto {
   pagesCount: number;
   page: number;

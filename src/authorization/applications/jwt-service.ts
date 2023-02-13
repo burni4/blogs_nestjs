@@ -13,4 +13,15 @@ export class JwtService {
       expiresIn: '20m',
     });
   }
+  verifyToken(token: string) {
+    try {
+      const result: any = jwt.verify(token, JWT_SECRET);
+      return result;
+    } catch (error) {
+      return null;
+    }
+  }
+  getUserIdFromTokenPayload(token) {
+    return token.userId;
+  }
 }

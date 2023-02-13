@@ -32,7 +32,7 @@ export class UsersController {
   @UseGuards(BasicAuthGuard)
   @Post()
   async addUser(@Body() inputModel: CreateUserInputModelDto) {
-    const result: OutputUserDto | null = await this.usersService.addUsers(
+    const result: OutputUserDto | null = await this.usersService.addUser(
       inputModel,
     );
     return result;

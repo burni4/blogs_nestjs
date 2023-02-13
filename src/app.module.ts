@@ -36,6 +36,10 @@ import {
 import { SecurityDevicesController } from './securityDevices/securityDevices.controller';
 import { SecurityDevicesService } from './securityDevices/securityDevices.service';
 import { SecurityDevicesRepository } from './securityDevices/securityDevices.repository';
+import { JwtService } from './authorization/applications/jwt-service';
+import { EmailAdapter } from './authorization/adapters/email-adapter';
+import { EmailManager } from './authorization/managers/email-manager';
+import { UsersQueryRepository } from './users/users.query-repository';
 
 const mongoURILocalhost = 'mongodb://0.0.0.0:27017';
 const dbName = 'nest-homeworks-blogs';
@@ -69,6 +73,7 @@ const mongoSchemas = [
     TestingService,
     UsersService,
     UsersRepository,
+    UsersQueryRepository,
     BlogsService,
     BlogsRepository,
     PostsService,
@@ -78,6 +83,9 @@ const mongoSchemas = [
     SecurityDevicesController,
     SecurityDevicesService,
     SecurityDevicesRepository,
+    JwtService,
+    EmailAdapter,
+    EmailManager,
     ...customValidators,
   ],
 })

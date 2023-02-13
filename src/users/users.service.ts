@@ -1,36 +1,67 @@
 import { Injectable } from '@nestjs/common';
 import { UsersRepository } from './users.repository';
-import { User } from './schemas/users.schema';
+import {
+  User,
+  UserEmailConfirmation,
+  UserRecoveryCode,
+} from './schemas/users.schema';
 import { CreateUserInputModelDto } from './dto/create-user.dto';
 import { PaginationConverter } from '../helpers/pagination';
 import {
   OutputUserDto,
   OutputUsersWithPaginationDto,
 } from './dto/output-user.dto';
+import { EmailManager } from '../authorization/managers/email-manager';
+import {
+  InputNewPasswordDto,
+  InputPasswordRecoveryDto,
+  InputRegistrationConfirmationDto,
+} from '../authorization/dto/authorization.dto';
+import { UsersQueryRepository } from './users.query-repository';
 
 @Injectable()
 export class UsersService {
-  constructor(protected usersRepository: UsersRepository) {}
+  constructor(
+    protected usersRepository: UsersRepository,
+    protected usersQueryRepository: UsersQueryRepository,
+    protected emailManager: EmailManager,
+  ) {}
+
   async deleteAllUsers(): Promise<boolean> {
     return await this.usersRepository.deleteAllUsers();
   }
+
   async findUsers(
     paginationParams: PaginationConverter,
   ): Promise<OutputUsersWithPaginationDto> {
-    return await this.usersRepository.findUsers(paginationParams);
+    return await this.usersQueryRepository.findUsers(paginationParams);
   }
-  async addUsers(
+
+  async addUser(
     createUserDto: CreateUserInputModelDto,
   ): Promise<OutputUserDto | null> {
     const user: User = new User();
     await user.fillNewUserData(createUserDto);
+    await user.accountData.fillPasswordSaltAndHash(createUserDto.password);
     const result: User | null = await this.usersRepository.save(user);
     if (!result) return null;
+
+    try {
+      await this.emailManager.sendEmailConfirmationMessage(
+        user.emailConfirmation.confirmationCode,
+        user.accountData.email,
+      );
+    } catch {
+      await this.usersRepository.delete(user);
+      return null;
+    }
+
     const outputUserDto = new OutputUserDto(user);
     return outputUserDto;
   }
+
   async deleteUserByID(userId: string): Promise<boolean> {
-    const foundUser: User | null = await this.usersRepository.findUserByID(
+    const foundUser: User | null = await this.usersQueryRepository.findUserByID(
       userId,
     );
     if (!foundUser) return false;
@@ -38,5 +69,64 @@ export class UsersService {
     const result: boolean = await this.usersRepository.delete(foundUser);
 
     return result;
+  }
+
+  async sendPasswordRecoveryCodeOnEmail(
+    inputModel: InputPasswordRecoveryDto,
+  ): Promise<boolean> {
+    const foundUser: User | null =
+      await this.usersQueryRepository.findUserByEmail(inputModel.email);
+    if (!foundUser) return false;
+
+    const recoveryCodeObj: UserRecoveryCode = foundUser.addRecoveryCode();
+
+    const result: User | null = await this.usersRepository.save(foundUser);
+
+    try {
+      await this.emailManager.sendEmailRecoveryPasswordMessage(
+        recoveryCodeObj.recoveryCode,
+        inputModel.email,
+      );
+    } catch {
+      return false;
+    }
+
+    return true;
+  }
+  async updatePassword(inputModel: InputNewPasswordDto): Promise<boolean> {
+    const user: User | null =
+      await this.usersQueryRepository.findUserByRecoveryCode(
+        inputModel.recoveryCode,
+      );
+
+    if (!user) return false;
+
+    if (!user.recoveryCodeIsValid(inputModel.recoveryCode)) return false;
+
+    await user.accountData.fillPasswordSaltAndHash(inputModel.newPassword);
+
+    user.deleteAllRecoveryCodes();
+
+    await this.usersRepository.save(user);
+
+    return true;
+  }
+
+  async confirmEmailByCode(
+    inputModel: InputRegistrationConfirmationDto,
+  ): Promise<boolean> {
+    const user: User | null =
+      await this.usersQueryRepository.findUserByConfirmationCode(
+        inputModel.code,
+      );
+    if (!user) return false;
+
+    const result: boolean = user.confirmEmailByCode(inputModel.code);
+
+    if (!result) return false;
+
+    await this.usersRepository.save(user);
+
+    return true;
   }
 }
