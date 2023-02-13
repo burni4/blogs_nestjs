@@ -44,6 +44,13 @@ describe('AppController', () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
 
+    it('Should return status 401 when create by unauthorized user   [POST]', async () => {
+      const createUserResponse = await request(server)
+        .post('/users')
+        .set('Authorization', 'Basic wrong login and password')
+        .expect(401);
+    });
+
     it('Should create new user. And return status 201 [POST]', async () => {
       const outputUserDto: OutputUserDto = {
         id: expect.any(String),
@@ -53,10 +60,13 @@ describe('AppController', () => {
       };
       const createUserResponse = await request(server)
         .post('/users')
+        .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
         .send(inputUserDto)
         .expect(201);
       expect(createUserResponse.body).toStrictEqual(outputUserDto);
     });
+
+    // .set('Authorization', `Bearer ${constants.variables.accessToken}`)
   });
 
   describe('Users [DELETE]', () => {
@@ -66,10 +76,17 @@ describe('AppController', () => {
     afterAll(async () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
+    it('Should return status 401 when delete by unauthorized user   [POST]', async () => {
+      const createUserResponse = await request(server)
+        .delete('/users/123')
+        .set('Authorization', 'Basic wrong login and password')
+        .expect(401);
+    });
     let userId = '';
     it('Should create new user. Return response status 201 [POST]', async () => {
       const newUser = await request(server)
         .post('/users')
+        .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
         .send(inputUserDto)
         .expect(201);
       userId = newUser.body.id;
@@ -78,11 +95,13 @@ describe('AppController', () => {
     it('Should try delete non existing user. Return response status 404 [DELETE]', async () => {
       await request(server)
         .delete('/users/' + 'UserID')
+        .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
         .expect(404);
     });
     it('Should delete new user. Return response status 204 [DELETE]', async () => {
       await request(server)
         .delete('/users/' + userId)
+        .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
         .expect(204);
     });
 
@@ -119,7 +138,11 @@ describe('AppController', () => {
     });
     it('Create 20 new users. All response statuses should be 201 [POST]', async () => {
       for (let step = 0; step < 20; step++) {
-        await request(server).post('/users').send(inputUserDto).expect(201);
+        await request(server)
+          .post('/users')
+          .set('Authorization', 'Basic YWRtaW46cXdlcnR5')
+          .send(inputUserDto)
+          .expect(201);
       }
     });
     it('Should return 2 users on page. Status 200 [GET]', async () => {

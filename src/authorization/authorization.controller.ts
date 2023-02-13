@@ -1,9 +1,9 @@
 import { Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from './authorization.guard';
+import { JWTAuthGuard } from './authorization.guard';
 
 @Controller('auth')
 export class AuthorizationController {
-  @UseGuards(AuthGuard)
+  @UseGuards(JWTAuthGuard)
   @Get('/me')
   async getInformationAboutCurrentUser() {}
   @Post('/password-recovery')
