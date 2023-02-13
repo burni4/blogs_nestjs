@@ -23,6 +23,7 @@ import {
   InputRegistrationEmailResendingDto,
 } from './dto/input-authorization.dto';
 import { JwtService, Tokens } from './applications/jwt-service';
+import { OutputLoginDto } from './dto/output-authorization.dto';
 
 @Controller('auth')
 export class AuthorizationController {
@@ -86,7 +87,7 @@ export class AuthorizationController {
 
     const tokens: Tokens = this.jwtService.generateNewTokens(user);
 
-    return { accessToken: tokens.accessToken };
+    return new OutputLoginDto(tokens.accessToken);
   }
   @Post('/refresh-token')
   async updateRefreshToken() {}
