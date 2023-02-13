@@ -48,7 +48,7 @@ export class ExceptionErrorsMessages {
       const constraintsKeys = Object.keys(elem.constraints);
       constraintsKeys.forEach((key) =>
         errorsMessages.push(
-          new ErrorsMessages(elem.property, elem.constraints[key]),
+          new ErrorsMessages(elem.constraints[key], elem.property),
         ),
       );
     });
