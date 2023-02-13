@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   Post,
   UnauthorizedException,
   UseGuards,
@@ -79,6 +80,7 @@ export class AuthorizationController {
   }
 
   @Post('/login')
+  @HttpCode(200)
   async loginUser(@Body() inputModel: InputLoginDto) {
     const user: User | null = await this.usersService.checkCredentials(
       inputModel,
