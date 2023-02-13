@@ -64,6 +64,7 @@ export class AuthorizationController {
     );
   }
   @Post('/registration-confirmation')
+  @HttpCode(204)
   async confirmEmailByCode(
     @Body() inputModel: InputRegistrationConfirmationDto,
   ) {
