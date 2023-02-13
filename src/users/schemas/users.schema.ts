@@ -28,6 +28,20 @@ export class UserEmailConfirmation {
       this.expirationDate.getTime() + hours * 60 * 60 * 1000,
     );
   }
+  static userEmailConfirmationDocumentToClass(
+    userEmailConfirmationDocument:
+      | HydratedDocument<UserEmailConfirmation>
+      | UserEmailConfirmation,
+  ): UserEmailConfirmation {
+    const userEmailConfirmation = new UserEmailConfirmation();
+    userEmailConfirmation.confirmationCode =
+      userEmailConfirmationDocument.confirmationCode;
+    userEmailConfirmation.expirationDate =
+      userEmailConfirmationDocument.expirationDate;
+    userEmailConfirmation.isConfirmed =
+      userEmailConfirmationDocument.isConfirmed;
+    return userEmailConfirmation;
+  }
 }
 
 export const UserEmailConfirmationSchema = SchemaFactory.createForClass(
@@ -51,15 +65,28 @@ export class UserRecoveryCode {
       this.expirationDate.getTime() + hours * 60 * 60 * 1000,
     );
   }
+
+  static userRecoveryCodeDocumentToClass(
+    userRecoveryCodeDocument:
+      | HydratedDocument<UserRecoveryCode>
+      | UserRecoveryCode,
+  ): UserRecoveryCode {
+    const userRecoveryCode = new UserRecoveryCode();
+    userRecoveryCode.recoveryCode = userRecoveryCodeDocument.recoveryCode;
+    userRecoveryCode.expirationDate = userRecoveryCodeDocument.expirationDate;
+    return userRecoveryCode;
+  }
 }
 export const UserRecoveryCodeSchema =
   SchemaFactory.createForClass(UserRecoveryCode);
 @Schema({ id: false, _id: false })
 export class UserAccountData {
-  constructor(inputData: CreateUserInputModelDto) {
-    this.login = inputData.login;
-    this.email = inputData.email;
-    this.createdAt = new Date().toISOString();
+  constructor(inputData: CreateUserInputModelDto | undefined = undefined) {
+    if (inputData) {
+      this.login = inputData.login;
+      this.email = inputData.email;
+      this.createdAt = new Date().toISOString();
+    }
   }
   @Prop({ required: true })
   login: string;
@@ -76,11 +103,26 @@ export class UserAccountData {
     return await bcrypt.genSalt(10);
   }
   async generateHash(password: string) {
-    return bcrypt.hash(password, this.passwordSalt);
+    return await bcrypt.hash(password, this.passwordSalt);
   }
   async fillPasswordSaltAndHash(password: string) {
     this.passwordSalt = await this.generateSalt();
     this.passwordHash = await this.generateHash(password);
+  }
+  static userAccountDataCodeDocumentToClass(
+    userAccountDataDocument:
+      | HydratedDocument<UserAccountData>
+      | UserAccountData,
+  ): UserAccountData {
+    const userAccountData = new UserAccountData();
+
+    userAccountData.login = userAccountDataDocument.login;
+    userAccountData.passwordHash = userAccountDataDocument.passwordHash;
+    userAccountData.passwordSalt = userAccountDataDocument.passwordSalt;
+    userAccountData.email = userAccountDataDocument.email;
+    userAccountData.createdAt = userAccountDataDocument.createdAt;
+
+    return userAccountData;
   }
 }
 
@@ -142,8 +184,20 @@ export class User {
   static userDocumentToUserClass(userDocument: UserDocument): User {
     const newUser = new User();
     newUser.id = userDocument.id;
-    newUser.accountData = userDocument.accountData;
-    newUser.emailConfirmation = userDocument.emailConfirmation;
+    newUser.accountData = UserAccountData.userAccountDataCodeDocumentToClass(
+      userDocument.accountData,
+    );
+    newUser.emailConfirmation =
+      UserEmailConfirmation.userEmailConfirmationDocumentToClass(
+        userDocument.emailConfirmation,
+      );
+
+    userDocument.recoveryCodes.forEach((elem) =>
+      newUser.recoveryCodes.push(
+        UserRecoveryCode.userRecoveryCodeDocumentToClass(elem),
+      ),
+    );
+
     return newUser;
   }
 
