@@ -16,14 +16,20 @@ import {
 import { UsersService } from '../users/users.service';
 import { CreateUserInputModelDto } from '../users/dto/create-user.dto';
 import {
+  InputLoginDto,
   InputNewPasswordDto,
   InputPasswordRecoveryDto,
   InputRegistrationConfirmationDto,
-} from './dto/authorization.dto';
+  InputRegistrationEmailResendingDto,
+} from './dto/input-authorization.dto';
+import { JwtService, Tokens } from './applications/jwt-service';
 
 @Controller('auth')
 export class AuthorizationController {
-  constructor(protected usersService: UsersService) {}
+  constructor(
+    protected usersService: UsersService,
+    protected jwtService: JwtService,
+  ) {}
   @UseGuards(JWTAuthGuard)
   @Get('/me')
   async getInformationAboutCurrentUser(@GetUserFromRequest() user: User) {
@@ -63,13 +69,28 @@ export class AuthorizationController {
     );
   }
 
+  @Post('/registration-email-resending')
+  async resendConfirmationCodeOnEmail(
+    @Body() inputModel: InputRegistrationEmailResendingDto,
+  ) {
+    const mailSend: boolean =
+      await this.usersService.sendPasswordRecoveryCodeOnEmail(inputModel);
+  }
+
   @Post('/login')
-  async loginUser() {}
+  async loginUser(@Body() inputModel: InputLoginDto) {
+    const user: User | null = await this.usersService.checkCredentials(
+      inputModel,
+    );
+    if (!user) throw new UnauthorizedException();
+
+    const tokens: Tokens = this.jwtService.generateNewTokens(user);
+
+    return { accessToken: tokens.accessToken };
+  }
   @Post('/refresh-token')
   async updateRefreshToken() {}
 
-  @Post('/registration-email-resending')
-  async resendConfirmationCodeOnEmail() {}
   @Post('/logout')
   async logoutUser() {}
 }

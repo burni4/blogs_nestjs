@@ -83,4 +83,16 @@ export class UsersQueryRepository {
     const user: User = User.userDocumentToUserClass(userFromDB);
     return user;
   }
+
+  async findByLoginOrEmail(loginOrEmail: string): Promise<User | null> {
+    const userFromDB: UserDocument = await this.UserModel.findOne({
+      $or: [
+        { 'accountData.login': { $regex: loginOrEmail, $options: 'i' } },
+        { 'accountData.email': { $regex: loginOrEmail, $options: 'i' } },
+      ],
+    }).exec();
+    if (!userFromDB) return null;
+    const user: User = User.userDocumentToUserClass(userFromDB);
+    return user;
+  }
 }

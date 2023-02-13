@@ -75,7 +75,7 @@ export class UserAccountData {
   async generateSalt() {
     return await bcrypt.genSalt(10);
   }
-  generateHash(password: string) {
+  async generateHash(password: string) {
     return bcrypt.hash(password, this.passwordSalt);
   }
   async fillPasswordSaltAndHash(password: string) {
@@ -107,6 +107,13 @@ export class User {
     this.emailConfirmation.isConfirmed = true;
     return true;
   }
+  async checkCredentialsPasswordHash(password: string): Promise<boolean> {
+    return (
+      this.accountData.passwordHash ===
+      (await this.accountData.generateHash(password))
+    );
+  }
+
   addRecoveryCode(): UserRecoveryCode {
     const recoveryCode: UserRecoveryCode = new UserRecoveryCode();
     this.recoveryCodes.push(recoveryCode);

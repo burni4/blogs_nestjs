@@ -13,10 +13,11 @@ import {
 } from './dto/output-user.dto';
 import { EmailManager } from '../authorization/managers/email-manager';
 import {
+  InputLoginDto,
   InputNewPasswordDto,
   InputPasswordRecoveryDto,
   InputRegistrationConfirmationDto,
-} from '../authorization/dto/authorization.dto';
+} from '../authorization/dto/input-authorization.dto';
 import { UsersQueryRepository } from './users.query-repository';
 
 @Injectable()
@@ -128,5 +129,20 @@ export class UsersService {
     await this.usersRepository.save(user);
 
     return true;
+  }
+  async checkCredentials(inputModel: InputLoginDto): Promise<User | null> {
+    const foundUser: User | null =
+      await this.usersQueryRepository.findByLoginOrEmail(
+        inputModel.loginOrEmail,
+      );
+    if (!foundUser) return null;
+
+    const result: boolean = await foundUser.checkCredentialsPasswordHash(
+      inputModel.password,
+    );
+
+    if (!result) return null;
+
+    return foundUser;
   }
 }
