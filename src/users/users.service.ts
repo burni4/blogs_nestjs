@@ -59,7 +59,7 @@ export class UsersService {
     }
 
     const foundUserByLogin = this.usersQueryRepository.findUserByLogin(
-      createUserDto.email,
+      createUserDto.login,
     );
     if (foundUserByLogin) {
       const error = new ExceptionErrorsMessages();
