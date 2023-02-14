@@ -1,13 +1,13 @@
-import bcrypt from 'bcrypt';
+import { genSalt, hash } from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class BcryptService {
   async generateSalt() {
-    return await bcrypt.genSalt(10);
+    return await genSalt(10);
   }
   async generateHash(password: string, passwordSalt: string) {
-    return await bcrypt.hash(password, passwordSalt);
+    return await hash(password, passwordSalt);
   }
 
   async checkCredentialsPasswordHash(

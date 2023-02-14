@@ -16,9 +16,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
+    console.log(status, '+++++++++++++++');
+    console.log(exception, ' exception');
     if (status === 400) {
       const errors: ExceptionErrorsMessages = new ExceptionErrorsMessages();
       errors.fillMessagesFromHttpExceptions(exception);
+      console.log(errors);
       response.status(status).json(errors);
     } else {
       response.status(status).json({
@@ -31,31 +34,35 @@ export class HttpExceptionFilter implements ExceptionFilter {
 }
 
 export class ExceptionErrorsMessages {
-  errorsMessages: ErrorsMessages[];
+  errorsMessages: ErrorsMessage[] = [];
   fillMessagesFromHttpExceptions(exception: HttpException) {
     const res: any = exception.getResponse();
-    const messages = (res.message as ErrorsMessages[]) || [];
-    const errorsMessages: ErrorsMessages[] = [];
+    const messages = (res.message as ErrorsMessage[]) || [];
+    const errorsMessages: ErrorsMessage[] = [];
     messages.forEach((mes) => {
       errorsMessages.push(mes);
     });
     this.errorsMessages = errorsMessages;
   }
+  addMessage(message: string, field: string) {
+    const newMessage = new ErrorsMessage(message, field);
+    this.errorsMessages.push(newMessage);
+  }
 
   static exceptionFactoryForValidationPipe(errors: ValidationError[]) {
-    const errorsMessages: ErrorsMessages[] = [];
+    const errorsMessages: ErrorsMessage[] = [];
     errors.forEach((elem) => {
       const constraintsKeys = Object.keys(elem.constraints);
       constraintsKeys.forEach((key) =>
         errorsMessages.push(
-          new ErrorsMessages(elem.constraints[key], elem.property),
+          new ErrorsMessage(elem.constraints[key], elem.property),
         ),
       );
     });
     throw new BadRequestException(errorsMessages);
   }
 }
-class ErrorsMessages {
+class ErrorsMessage {
   message: string;
   field: string;
   constructor(message: string, field: string) {

@@ -66,6 +66,15 @@ export class UsersQueryRepository {
     return user;
   }
 
+  async findUserByLogin(userLogin: string): Promise<User | null> {
+    const userFromDB: UserDocument = await this.UserModel.findOne({
+      'accountData.login': { $regex: userLogin, $options: 'i' },
+    }).exec();
+    if (!userFromDB) return null;
+    const user: User = User.userDocumentToUserClass(userFromDB);
+    return user;
+  }
+
   async findUserByRecoveryCode(recoveryCode: string): Promise<User | null> {
     const userFromDB: UserDocument = await this.UserModel.findOne({
       'recoveryCodes.recoveryCode': recoveryCode,
