@@ -89,6 +89,7 @@ export class UsersService {
         user.accountData.email,
       );
     } catch (e) {
+      console.log(e);
       await this.usersRepository.delete(user);
       return null;
     }

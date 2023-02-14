@@ -129,7 +129,7 @@ export class User {
   emailConfirmation: UserEmailConfirmation;
 
   @Prop({ type: [UserRecoveryCodeSchema] })
-  recoveryCodes: UserRecoveryCode[];
+  recoveryCodes: UserRecoveryCode[] = [];
 
   confirmEmailByCode(code: string): boolean {
     if (this.emailConfirmation.isConfirmed) return false;
@@ -141,6 +141,7 @@ export class User {
 
   addRecoveryCode(): UserRecoveryCode {
     const recoveryCode: UserRecoveryCode = new UserRecoveryCode();
+    console.log(this, '+++++++++++++++++ addRecoveryCode() +++++++++++++++');
     this.recoveryCodes.push(recoveryCode);
     return recoveryCode;
   }
@@ -174,6 +175,8 @@ export class User {
       UserEmailConfirmation.userEmailConfirmationDocumentToClass(
         userDocument.emailConfirmation,
       );
+
+    newUser.recoveryCodes = [];
 
     userDocument.recoveryCodes.forEach((elem) =>
       newUser.recoveryCodes.push(
