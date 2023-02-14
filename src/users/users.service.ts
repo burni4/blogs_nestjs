@@ -128,7 +128,33 @@ export class UsersService {
     } catch {
       return false;
     }
+    return true;
+  }
 
+  async resendingConfirmationCodeOnEmail(
+    inputModel: InputPasswordRecoveryDto,
+  ): Promise<boolean> {
+    const foundUser: User | null =
+      await this.usersQueryRepository.findUserByEmail(inputModel.email);
+    if (!foundUser) return false;
+
+    if (!foundUser) return false;
+    if (foundUser.emailConfirmation.isConfirmed) return false;
+
+    const newEmailConfirmation = new UserEmailConfirmation();
+
+    foundUser.emailConfirmation = newEmailConfirmation;
+
+    const result: User | null = await this.usersRepository.save(foundUser);
+
+    try {
+      await this.emailManager.sendEmailConfirmationMessage(
+        newEmailConfirmation.confirmationCode,
+        inputModel.email,
+      );
+    } catch {
+      return false;
+    }
     return true;
   }
   async updatePassword(inputModel: InputNewPasswordDto): Promise<boolean> {
@@ -168,10 +194,6 @@ export class UsersService {
     if (!result) return false;
 
     await this.usersRepository.save(user);
-
-    console.log(user, '---------------after saving-------------------');
-    const dd = await this.usersQueryRepository.findUserByID(user.id);
-    console.log(dd, '---------------after saving from DB-------------------');
 
     return true;
   }

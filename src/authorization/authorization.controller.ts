@@ -79,7 +79,7 @@ export class AuthorizationController {
     @Body() inputModel: InputRegistrationEmailResendingDto,
   ) {
     const mailSend: boolean =
-      await this.usersService.sendPasswordRecoveryCodeOnEmail(inputModel);
+      await this.usersService.resendingConfirmationCodeOnEmail(inputModel);
   }
 
   @Post('/login')
