@@ -15,6 +15,18 @@ export class UsersRepository {
       return null;
     }
   }
+
+  async update(user: User): Promise<User | null> {
+    try {
+      const result = await this.UserModel.updateOne(
+        { id: user.id },
+        { $set: user },
+      );
+      return user;
+    } catch (error) {
+      return null;
+    }
+  }
   async delete(user: User): Promise<boolean> {
     try {
       const result = await this.UserModel.deleteOne({

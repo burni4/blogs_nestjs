@@ -118,7 +118,7 @@ export class UsersService {
 
     const recoveryCodeObj: UserRecoveryCode = foundUser.addRecoveryCode();
 
-    const result: User | null = await this.usersRepository.save(foundUser);
+    const result: User | null = await this.usersRepository.update(foundUser);
 
     try {
       await this.emailManager.sendEmailRecoveryPasswordMessage(
@@ -136,16 +136,15 @@ export class UsersService {
   ): Promise<boolean> {
     const foundUser: User | null =
       await this.usersQueryRepository.findUserByEmail(inputModel.email);
-    if (!foundUser) return false;
 
-    if (!foundUser) return false;
-    if (foundUser.emailConfirmation.isConfirmed) return false;
+    if (!foundUser) return null;
+    if (foundUser.emailConfirmation.isConfirmed) return null;
 
     const newEmailConfirmation = new UserEmailConfirmation();
 
     foundUser.emailConfirmation = newEmailConfirmation;
 
-    const result: User | null = await this.usersRepository.save(foundUser);
+    const result: User | null = await this.usersRepository.update(foundUser);
 
     try {
       await this.emailManager.sendEmailConfirmationMessage(
@@ -175,7 +174,7 @@ export class UsersService {
 
     user.deleteAllRecoveryCodes();
 
-    await this.usersRepository.save(user);
+    await this.usersRepository.update(user);
 
     return true;
   }
@@ -193,7 +192,7 @@ export class UsersService {
 
     if (!result) return false;
 
-    await this.usersRepository.save(user);
+    await this.usersRepository.update(user);
 
     return true;
   }

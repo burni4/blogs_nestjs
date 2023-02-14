@@ -78,8 +78,7 @@ export class AuthorizationController {
   async resendConfirmationCodeOnEmail(
     @Body() inputModel: InputRegistrationEmailResendingDto,
   ) {
-    const mailSend: boolean =
-      await this.usersService.resendingConfirmationCodeOnEmail(inputModel);
+    return this.usersService.resendingConfirmationCodeOnEmail(inputModel);
   }
 
   @Post('/login')
