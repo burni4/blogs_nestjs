@@ -74,6 +74,7 @@ export class AuthorizationController {
   }
 
   @Post('/registration-email-resending')
+  @HttpCode(204)
   async resendConfirmationCodeOnEmail(
     @Body() inputModel: InputRegistrationEmailResendingDto,
   ) {

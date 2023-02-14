@@ -15,13 +15,16 @@ export class ConfirmationCodeBodyValidator
       const user = await this.usersQueryRepository.findUserByConfirmationCode(
         code,
       );
-      return !!user;
+      console.log(user, '---------------validate-------------------');
+      if (!user) return false;
+      if (user.emailConfirmation.isConfirmed) return false;
+      return true;
     } catch (e) {
       return false;
     }
   }
 
   defaultMessage(args: ValidationArguments) {
-    return 'User with this confirmation code does not exist';
+    return 'User with this confirmation code does not exist. Or email is confirmed';
   }
 }

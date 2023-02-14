@@ -141,7 +141,6 @@ export class User {
 
   addRecoveryCode(): UserRecoveryCode {
     const recoveryCode: UserRecoveryCode = new UserRecoveryCode();
-    console.log(this, '+++++++++++++++++ addRecoveryCode() +++++++++++++++');
     this.recoveryCodes.push(recoveryCode);
     return recoveryCode;
   }
