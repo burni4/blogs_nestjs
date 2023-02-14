@@ -15,7 +15,7 @@ export class ConfirmationCodeBodyValidator
       const user = await this.usersQueryRepository.findUserByConfirmationCode(
         code,
       );
-      console.log(user, '---------------validate-------------------');
+
       if (!user) return false;
       if (user.emailConfirmation.isConfirmed) return false;
       return true;

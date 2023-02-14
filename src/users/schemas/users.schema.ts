@@ -132,6 +132,7 @@ export class User {
   recoveryCodes: UserRecoveryCode[] = [];
 
   confirmEmailByCode(code: string): boolean {
+    console.log(this, '---------------validate-------------------');
     if (this.emailConfirmation.isConfirmed) return false;
     if (this.emailConfirmation.confirmationCode !== code) return false;
     if (this.emailConfirmation.expirationDate <= new Date()) return false;
