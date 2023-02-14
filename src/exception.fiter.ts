@@ -17,9 +17,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
 
     if (status === 400) {
+      const myErrors = exception.getResponse();
+      if (myErrors['errorsMessages'] !== undefined) {
+        response.status(status).json(myErrors);
+        return;
+      }
       const errors: ExceptionErrorsMessages = new ExceptionErrorsMessages();
       errors.fillMessagesFromHttpExceptions(exception);
-      console.log(errors);
       response.status(status).json(errors);
     } else {
       response.status(status).json({

@@ -25,6 +25,7 @@ import {
 import { UsersQueryRepository } from './users.query-repository';
 import { BcryptService } from '../authorization/applications/bcrypt-service';
 import { ErrorsMessage, ExceptionErrorsMessages } from '../exception.fiter';
+import { json } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -48,6 +49,8 @@ export class UsersService {
   async addUser(
     createUserDto: CreateUserInputModelDto,
   ): Promise<OutputUserDto | null> {
+    const error = new ExceptionErrorsMessages();
+
     const foundUserByEmail = await this.usersQueryRepository.findUserByEmail(
       createUserDto.email,
     );
