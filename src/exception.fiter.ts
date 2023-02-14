@@ -16,8 +16,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
-    console.log(status, '+++++++++++++++');
-    console.log(exception, ' exception');
     if (status === 400) {
       const errors: ExceptionErrorsMessages = new ExceptionErrorsMessages();
       errors.fillMessagesFromHttpExceptions(exception);
@@ -43,10 +41,6 @@ export class ExceptionErrorsMessages {
       errorsMessages.push(mes);
     });
     this.errorsMessages = errorsMessages;
-  }
-  addMessage(message: string, field: string) {
-    const newMessage = new ErrorsMessage(message, field);
-    this.errorsMessages.push(newMessage);
   }
 
   static exceptionFactoryForValidationPipe(errors: ValidationError[]) {

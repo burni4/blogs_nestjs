@@ -48,24 +48,23 @@ export class UsersService {
   async addUser(
     createUserDto: CreateUserInputModelDto,
   ): Promise<OutputUserDto | null> {
-    //;
-    const foundUserByEmail = this.usersQueryRepository.findUserByEmail(
-      createUserDto.email,
-    );
-    if (foundUserByEmail) {
-      const error = new ExceptionErrorsMessages();
-      error.addMessage('User with this mail already exist', 'email');
-      throw new BadRequestException(error);
-    }
-
-    const foundUserByLogin = this.usersQueryRepository.findUserByLogin(
-      createUserDto.login,
-    );
-    if (foundUserByLogin) {
-      const error = new ExceptionErrorsMessages();
-      error.addMessage('User with this login already exist', 'login');
-      throw new BadRequestException(error);
-    }
+    // const foundUserByEmail = this.usersQueryRepository.findUserByEmail(
+    //   createUserDto.email,
+    // );
+    // if (foundUserByEmail) {
+    //   const error = new ExceptionErrorsMessages();
+    //   error.addMessage('User with this mail already exist', 'email');
+    //   throw new BadRequestException(error);
+    // }
+    //
+    // const foundUserByLogin = this.usersQueryRepository.findUserByLogin(
+    //   createUserDto.login,
+    // );
+    // if (foundUserByLogin) {
+    //   const error = new ExceptionErrorsMessages();
+    //   error.addMessage('User with this login already exist', 'login');
+    //   throw new BadRequestException(error);
+    // }
 
     const user: User = new User();
     await user.fillNewUserData(createUserDto);
