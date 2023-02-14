@@ -48,7 +48,7 @@ export class UsersService {
   async addUser(
     createUserDto: CreateUserInputModelDto,
   ): Promise<OutputUserDto | null> {
-    const foundUserByEmail = this.usersQueryRepository.findUserByEmail(
+    const foundUserByEmail = await this.usersQueryRepository.findUserByEmail(
       createUserDto.email,
     );
     if (foundUserByEmail) {
@@ -59,7 +59,7 @@ export class UsersService {
       throw new BadRequestException(error);
     }
 
-    const foundUserByLogin = this.usersQueryRepository.findUserByLogin(
+    const foundUserByLogin = await this.usersQueryRepository.findUserByLogin(
       createUserDto.login,
     );
     if (foundUserByLogin) {
