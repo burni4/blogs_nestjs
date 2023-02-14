@@ -56,7 +56,7 @@ export class ExceptionErrorsMessages {
     throw new BadRequestException(errorsMessages);
   }
 }
-class ErrorsMessage {
+export class ErrorsMessage {
   message: string;
   field: string;
   constructor(message: string, field: string) {
