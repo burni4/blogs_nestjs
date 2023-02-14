@@ -169,6 +169,10 @@ export class UsersService {
 
     await this.usersRepository.save(user);
 
+    console.log(user, '---------------after saving-------------------');
+    const dd = await this.usersQueryRepository.findUserByID(user.id);
+    console.log(dd, '---------------after saving from DB-------------------');
+
     return true;
   }
   async checkCredentials(inputModel: InputLoginDto): Promise<User | null> {
