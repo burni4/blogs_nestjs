@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersRepository } from './users.repository';
 import {
   User,
@@ -19,6 +23,7 @@ import {
   InputRegistrationConfirmationDto,
 } from '../authorization/dto/input-authorization.dto';
 import { UsersQueryRepository } from './users.query-repository';
+import { BcryptService } from '../authorization/applications/bcrypt-service';
 
 @Injectable()
 export class UsersService {
@@ -26,6 +31,7 @@ export class UsersService {
     protected usersRepository: UsersRepository,
     protected usersQueryRepository: UsersQueryRepository,
     protected emailManager: EmailManager,
+    protected bcryptService: BcryptService,
   ) {}
 
   async deleteAllUsers(): Promise<boolean> {
@@ -41,9 +47,15 @@ export class UsersService {
   async addUser(
     createUserDto: CreateUserInputModelDto,
   ): Promise<OutputUserDto | null> {
+    //throw new BadRequestException();
+
     const user: User = new User();
     await user.fillNewUserData(createUserDto);
-    await user.accountData.fillPasswordSaltAndHash(createUserDto.password);
+    user.accountData.passwordSalt = await this.bcryptService.generateSalt();
+    user.accountData.passwordHash = await this.bcryptService.generateHash(
+      createUserDto.password,
+      user.accountData.passwordSalt,
+    );
     const result: User | null = await this.usersRepository.save(user);
     if (!result) return null;
 
@@ -104,7 +116,11 @@ export class UsersService {
 
     if (!user.recoveryCodeIsValid(inputModel.recoveryCode)) return false;
 
-    await user.accountData.fillPasswordSaltAndHash(inputModel.newPassword);
+    user.accountData.passwordSalt = await this.bcryptService.generateSalt();
+    user.accountData.passwordHash = await this.bcryptService.generateHash(
+      inputModel.newPassword,
+      user.accountData.passwordSalt,
+    );
 
     user.deleteAllRecoveryCodes();
 
@@ -137,9 +153,12 @@ export class UsersService {
       );
     if (!foundUser) return null;
 
-    const result: boolean = await foundUser.checkCredentialsPasswordHash(
-      inputModel.password,
-    );
+    const result: boolean =
+      await this.bcryptService.checkCredentialsPasswordHash(
+        foundUser.accountData.passwordHash,
+        foundUser.accountData.passwordSalt,
+        inputModel.password,
+      );
 
     if (!result) return null;
 

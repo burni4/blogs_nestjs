@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 import { CreateUserInputModelDto } from '../dto/create-user.dto';
 import {
@@ -99,16 +98,6 @@ export class UserAccountData {
   @Prop({ required: true })
   createdAt: string;
 
-  async generateSalt() {
-    return await bcrypt.genSalt(10);
-  }
-  async generateHash(password: string) {
-    return await bcrypt.hash(password, this.passwordSalt);
-  }
-  async fillPasswordSaltAndHash(password: string) {
-    this.passwordSalt = await this.generateSalt();
-    this.passwordHash = await this.generateHash(password);
-  }
   static userAccountDataCodeDocumentToClass(
     userAccountDataDocument:
       | HydratedDocument<UserAccountData>
@@ -148,12 +137,6 @@ export class User {
     if (this.emailConfirmation.expirationDate <= new Date()) return false;
     this.emailConfirmation.isConfirmed = true;
     return true;
-  }
-  async checkCredentialsPasswordHash(password: string): Promise<boolean> {
-    return (
-      this.accountData.passwordHash ===
-      (await this.accountData.generateHash(password))
-    );
   }
 
   addRecoveryCode(): UserRecoveryCode {

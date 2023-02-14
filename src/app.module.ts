@@ -40,6 +40,7 @@ import { JwtService } from './authorization/applications/jwt-service';
 import { EmailAdapter } from './authorization/adapters/email-adapter';
 import { EmailManager } from './authorization/managers/email-manager';
 import { UsersQueryRepository } from './users/users.query-repository';
+import { BcryptService } from './authorization/applications/bcrypt-service';
 
 const mongoURILocalhost = 'mongodb://0.0.0.0:27017';
 const dbName = 'nest-homeworks-blogs';
@@ -71,6 +72,7 @@ const mongoSchemas = [
   providers: [
     AppService,
     TestingService,
+    BcryptService,
     UsersService,
     UsersRepository,
     UsersQueryRepository,
